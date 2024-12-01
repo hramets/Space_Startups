@@ -8,21 +8,6 @@ import logging
 import time
 
 
-def runtime(func: Callable):
-    """
-    Decorator for checking a function runtime.
-    """
-    def wrapper(*args, **kwargs):
-        start = time.time()
-        res = func(*args, **kwargs)
-        end = time.time()
-
-        logging.info(msg=f"Execution runs: {end - start}")
-        return res
-
-    return wrapper
-
-
 def parse_url(url: str) -> BeautifulSoup:
     """
     Method takes url, creates response with requests,
@@ -121,7 +106,7 @@ def extract_startup_info(html: bs4.element.ResultSet) -> dict[str, str]:
 
     return startup_info
 
-@runtime
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
