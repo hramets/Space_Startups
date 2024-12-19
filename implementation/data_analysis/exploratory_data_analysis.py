@@ -34,6 +34,8 @@ debug_logger.addHandler(hdlr=debug_handler)
 
 ### EDA
 
+image_save_dir: str = "assets\\visualizations\\"
+
 with open(file=(
     "C:\\Users\\artjo\\.vscode\\Space StartUps\\assets\\data\\startups_data.json"
     ),
@@ -156,6 +158,7 @@ numerical_columns: list[str] = list(
     main_data.select_dtypes(include=np.number).columns
 )
 
+
 ## Univariate analysis
 
 amount_formatter: FuncFormatter = FuncFormatter(
@@ -178,7 +181,7 @@ for column in numerical_columns:
         else:
             ax.xaxis.set_minor_locator(MultipleLocator(1))
         ax.yaxis.set_major_locator(MaxNLocator(integer=True)) 
-    plt.savefig(f"{column}_skew.png")
+    plt.savefig(f"{image_save_dir}{column}_skew.png")
     plt.close(fig=fig)
 """
 - Space startups were started to be actively developed in around 2005.
@@ -225,7 +228,7 @@ for row in range(2):
             )
         cat_column_ind += 1
 axs[0, 0].tick_params(axis="x", rotation=90)
-plt.savefig("categorical_columns_unvariate_observ.png")
+plt.savefig(f"{image_save_dir}categorical_unvariate_observ.png")
 plt.close(fig=fig)
 """
 Categorical data countplots show us:
@@ -244,10 +247,11 @@ Categorical data countplots show us:
 main_data["amount_raised_log"] = np.log1p(main_data["amount_raised(usd)"])
 plt.figure(layout="constrained")
 sns.histplot(data=main_data["amount_raised_log"], bins=50, kde=True)
-plt.savefig("amount_log_distribution")
+plt.savefig(f"{image_save_dir}amount_log_distribution")
 plt.close()
 
 numerical_columns.append("amount_raised_log")
+
 
 ## Bivariate analysis
 
@@ -257,7 +261,7 @@ numerical_pairplot: sns.PairGrid = sns.pairplot(
     aspect=1
 )
 numerical_pairplot.figure.set_constrained_layout(True)
-plt.savefig("numerical_bivariate_observ.png")
+plt.savefig(f"{image_save_dir}numerical_bivariate_observ.png")
 plt.close()
 """
 - Startup age has positive correlation with raised amount.
@@ -355,7 +359,7 @@ sns.barplot(
 axs[3, 0].set_title("Funding_lvl VS Age")
 axs[3, 1].remove()
 
-plt.savefig("categorical_bivariate_observ.png")
+plt.savefig(f"{image_save_dir}categorical_bivariate_observ.png")
 plt.close()
 
 """
@@ -413,7 +417,7 @@ correlation_data = correlation_data.drop(
 plt.figure(figsize=(12, 7), layout="constrained")
 sns.heatmap(data=correlation_data.corr(), vmin=-1, vmax=1, annot=True)
 
-plt.savefig("correlation_multivariate.png")
+plt.savefig(f"{image_save_dir}correlation_multivariate.png")
 plt.close()
 
 """
