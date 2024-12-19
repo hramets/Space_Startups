@@ -2,10 +2,9 @@ import requests
 import bs4
 from bs4 import BeautifulSoup
 import json
-from typing import Any, Callable
+from typing import Any
 from urllib.parse import urljoin
 import logging
-import time
 
 
 def parse_url(url: str) -> BeautifulSoup:
