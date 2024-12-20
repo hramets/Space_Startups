@@ -46,25 +46,32 @@ with open(file=(
     
 data: pd.DataFrame = pd.DataFrame(data=data)
 
-# While data scrapping not founded values were recorded as "Unknown"
-data = data.replace(to_replace="Unknown", value=None)
+# While data scrapping not founded values were recorded as "Unknown" or "".
+data = data.replace(to_replace=["Unknown", ""], value=None)
 
 print(data.info())  # =>
 """
 - Data has 130 rows and 7 columns.
-- All the columns have 130 non-null objects, therefore there are
-    no missing values in data.
+- Only Industry column has one null-value.
 """
+print(data[data["Industry"].isnull()]) # =>
+"""
+NewRocket startup has no industry on page.
+According to the startup's description, the Launch industry fits here.
+"""
+newrocket_ind: int = data[data.Name == "NewRocket"].index.item()
+data.at[newrocket_ind, "Industry"] = "Launch"
 
 print(data.nunique()) # =>
 """
 Name and Idea columns have all the 130 values unique.
 Data contains:
-1. 21 locations (countries) - categorical data
-2. 20 unique year values - categorical data
-3. 6 employees number categories - categorical data
-4. 5 funding levels - categorical data
-5. 70 unique amount raised values - numerical data
+1. 11 industries - categorical data
+2. 21 locations (countries) - categorical data
+3. 20 unique year values - categorical data
+4. 6 employees number categories - categorical data
+5. 5 funding levels - categorical data
+6. 70 unique amount raised values - numerical data
 ....
 """
 
@@ -133,14 +140,13 @@ main_data.insert(
     column="startup_size",
     value=main_data["employees_number"].map(mapping)
 )
-print(main_data.head())
+#print(main_data.head())
 
-
- # Checking for anomalies in values.
-for column in main_data.columns:
-    print(main_data[column].unique()) if not column in [
-        "name", "amount_raised(usd)"
-    ] else None
+# Checking for anomalies in values.
+# for column in main_data.columns:
+#     print(main_data[column].unique()) if not column in [
+#         "name", "amount_raised(usd)"
+#     ] else None
 
 pd.set_option("display.float_format", "{:.0f}".format)
 print(main_data.describe().T)
@@ -196,14 +202,14 @@ for column in numerical_columns:
 """
 
 fig, axs = plt.subplots(
-    nrows=2,
+    nrows=3,
     ncols=2,
     figsize=(18, 15),
     layout="constrained"
 )
 print(categorical_columns)
 cat_column_ind: int = 0
-for row in range(2):
+for row in range(3):
     for column in range(2):
         column_name: str = categorical_columns[cat_column_ind]
         sns.countplot(
@@ -226,12 +232,22 @@ for row in range(2):
             color="black",
             linestyle="--"
             )
-        cat_column_ind += 1
-axs[0, 0].tick_params(axis="x", rotation=90)
+        
+        if column_name in ["industry", "country"]:
+            axs[row, column].tick_params(axis="x", rotation=90)
+        
+        if cat_column_ind < len(categorical_columns) - 1:
+            cat_column_ind += 1
+            continue
+        break
+axs[2, 1].remove()
+
 plt.savefig(f"{image_save_dir}categorical_unvariate_observ.png")
 plt.close(fig=fig)
 """
-Categorical data countplots show us:
+Categorical data countplots:
+- The most active space startups' industry is Satellites - about 40.
+    The next is Launch - more than 25.
 - USA is a leader in space startups - more than 70. 
     The second is UK - more than 10.
 - As a rule, there are very small and small size space startups with
@@ -247,7 +263,7 @@ Categorical data countplots show us:
 main_data["amount_raised_log"] = np.log1p(main_data["amount_raised(usd)"])
 plt.figure(layout="constrained")
 sns.histplot(data=main_data["amount_raised_log"], bins=50, kde=True)
-plt.savefig(f"{image_save_dir}amount_log_distribution")
+#plt.savefig(f"{image_save_dir}amount_log_distribution")
 plt.close()
 
 numerical_columns.append("amount_raised_log")
@@ -271,80 +287,122 @@ plt.close()
 print(categorical_columns, numerical_columns, sep="\n")
 
 fig, axs = plt.subplots(
-    nrows=4, ncols=2, layout="constrained", figsize=(18, 25)
+    nrows=4, ncols=3, layout="constrained", figsize=(18, 25)
 )
+
 data = main_data.groupby(
-    "country"
-)["startup_age"].mean().sort_values(ascending=False).head(20).reset_index()
+    "industry"
+)["startup_age"].mean().sort_values(ascending=False).reset_index()
 sns.barplot(
     ax=axs[0, 0],
+    data=data,
+    x="industry",
+    y="startup_age",
+    palette="viridis"
+)
+axs[0, 0].tick_params(axis="x", rotation=90)
+axs[0, 0].set_title("Industry VS Age")
+
+data = main_data.groupby(
+    "industry"
+)["amount_raised_log"].mean().sort_values(ascending=False).reset_index()
+sns.barplot(
+    ax=axs[0, 1],
+    data=data,
+    x="industry",
+    y="amount_raised_log",
+    palette="viridis"
+)
+axs[0, 1].tick_params(axis="x", rotation=90)
+axs[0, 1].set_title("Industry VS Amount raised(log)")
+
+data = main_data.groupby(
+    "industry"
+)["amount_raised(usd)"].mean().sort_values(ascending=False).reset_index()
+sns.barplot(
+    ax=axs[0, 2],
+    data=data,
+    x="industry",
+    y="amount_raised(usd)",
+    palette="viridis"
+)
+axs[0, 2].tick_params(axis="x", rotation=90)
+axs[0, 2].set_title("Industry VS Amount raised(USD)")
+
+data = main_data.groupby(
+    "country"
+)["startup_age"].mean().sort_values(ascending=False).reset_index()
+sns.barplot(
+    ax=axs[1, 0],
     data=data,
     x="country",
     y="startup_age",
     palette="viridis"
 )
-axs[0, 0].tick_params(axis="x", rotation=90)
-axs[0, 0].set_title("Country VS Age")
+axs[1, 0].tick_params(axis="x", rotation=90)
+axs[1, 0].set_title("Country VS Age")
+
+data = main_data.groupby(
+    "country"
+)["amount_raised_log"].mean().sort_values(ascending=False).reset_index()
+sns.barplot(
+    ax=axs[1, 1],
+    data=data,
+    x="country",
+    y="amount_raised_log",
+    palette="viridis"
+)
+axs[1, 1].tick_params(axis="x", rotation=90)
+axs[1, 1].set_title("Country VS Amount raised(log)")
+
+data = main_data.groupby(
+    "country"
+)["amount_raised(usd)"].mean().sort_values(ascending=False).reset_index()
+sns.barplot(
+    ax=axs[1, 2],
+    data=data,
+    x="country",
+    y="amount_raised(usd)",
+    palette="viridis"
+)
+axs[1, 2].tick_params(axis="x", rotation=90)
+axs[1, 2].set_title("Country VS Amount raised(USD)")
 
 data = main_data.groupby(
     "startup_size"
 )["startup_age"].mean().sort_values(ascending=False).reset_index()
 sns.barplot(
-    ax=axs[0, 1],
+    ax=axs[2, 0],
     data=data,
     x="startup_size",
     y="startup_age",
     palette="viridis"
 )
-axs[0, 1].set_title("Size VS Age")
+axs[2, 0].set_title("Size VS Age")
 
 data = main_data.groupby(
     "startup_size"
 )["amount_raised_log"].mean().sort_values(ascending=False).reset_index()
-sns.barplot(
-    ax=axs[1, 0],
-    data=data,
-    x="startup_size",
-    y="amount_raised_log",
-    palette="viridis"
-)
-axs[1, 0].set_title("Size VS Amount_raised(log)")
-
-data = main_data.groupby(
-    "startup_size"
-)["amount_raised(usd)"].mean().sort_values(ascending=False).reset_index()
-sns.barplot(
-    ax=axs[1, 1],
-    data=data,
-    x="startup_size",
-    y="amount_raised(usd)",
-    palette="viridis"
-)
-axs[1, 1].set_title("Size VS Amount_raised(USD)")
-
-data = main_data.groupby(
-    "current_funding_level"
-)["amount_raised_log"].mean().sort_values(ascending=False).reset_index()
-sns.barplot(
-    ax=axs[2, 0],
-    data=data,
-    x="current_funding_level",
-    y="amount_raised_log",
-    palette="viridis"
-)
-axs[2, 0].set_title("Funding_lvl VS Amount_raised(log)")
-
-data = main_data.groupby(
-    "current_funding_level"
-)["amount_raised(usd)"].mean().sort_values(ascending=False).reset_index()
 sns.barplot(
     ax=axs[2, 1],
     data=data,
-    x="current_funding_level",
+    x="startup_size",
+    y="amount_raised_log",
+    palette="viridis"
+)
+axs[2, 1].set_title("Size VS Amount_raised(log)")
+
+data = main_data.groupby(
+    "startup_size"
+)["amount_raised(usd)"].mean().sort_values(ascending=False).reset_index()
+sns.barplot(
+    ax=axs[2, 2],
+    data=data,
+    x="startup_size",
     y="amount_raised(usd)",
     palette="viridis"
 )
-axs[2, 1].set_title("Funding_lvl VS Amount_raised(USD)")
+axs[2, 2].set_title("Size VS Amount_raised(USD)")
 
 data = main_data.groupby(
     "current_funding_level"
@@ -357,16 +415,45 @@ sns.barplot(
     palette="viridis"
 )
 axs[3, 0].set_title("Funding_lvl VS Age")
-axs[3, 1].remove()
+
+data = main_data.groupby(
+    "current_funding_level"
+)["amount_raised_log"].mean().sort_values(ascending=False).reset_index()
+sns.barplot(
+    ax=axs[3, 1],
+    data=data,
+    x="current_funding_level",
+    y="amount_raised_log",
+    palette="viridis"
+)
+axs[3, 1].set_title("Funding_lvl VS Amount_raised(log)")
+
+data = main_data.groupby(
+    "current_funding_level"
+)["amount_raised(usd)"].mean().sort_values(ascending=False).reset_index()
+sns.barplot(
+    ax=axs[3, 2],
+    data=data,
+    x="current_funding_level",
+    y="amount_raised(usd)",
+    palette="viridis"
+)
+axs[3, 2].set_title("Funding_lvl VS Amount_raised(USD)")
+
 
 plt.savefig(f"{image_save_dir}categorical_bivariate_observ.png")
 plt.close()
 
 """
+- On average, the oldest industry is Rovers.
+    Also, the biggest amounts are raised in Rovers on average.
 - On average, Japan has the oldest space startups.
+    On average, the top amounts raised countries are
+    China, Japan, Finland. If counting huge amount outliers then the leaders
+    are USA, China, Japan
 - On average, the oldest space startups are
-    in size of enterprises (1000+ employees)
-- On average, the biggest amounts are raised in enterprises(1000+ employees).
+    in size of enterprises (1000+ employees).
+    On average, the biggest amounts are raised in enterprises(1000+ employees).
     But the next are medium size space startups.
 - On average, space startups on Series C+ funding level are 
     the oldest ones and have the biggest amounts raised.
@@ -405,6 +492,7 @@ correlation_data.insert(
 correlation_data = correlation_data.drop(
     columns=[
         "name",
+        "industry",
         "country",
         "startup_size",
         "employees_number",
