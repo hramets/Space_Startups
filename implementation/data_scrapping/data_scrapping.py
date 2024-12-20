@@ -1,5 +1,5 @@
 import requests
-import bs4
+from bs4.element import ResultSet, Tag
 from bs4 import BeautifulSoup
 import json
 from typing import Any
@@ -9,7 +9,7 @@ import logging
 
 def parse_url(url: str) -> BeautifulSoup:
     """
-    Method takes url, creates response with requests,
+    Function takes url, creates response with requests,
     parses to html with BeautifulSoup.
     Returns BeautifulSoup parser
     """
@@ -34,15 +34,16 @@ def extract_country_startups_page_info(
     used function 'extract_start_up_info', that extracts
     all the information about a certain startup.
     Extracted startup info is appended to the storage list.
+    Return storage list.
     """
     try:
-        country_startups_page_parser = parse_url(page_url)
+        country_startups_page_parser: BeautifulSoup = parse_url(page_url)
     except requests.exceptions.RequestException as error:
         logging.warning(msg=f"Error fetching country URL {page_url}: {error}")
         return
 
     # All the startups html -> class "industries-inner"
-    startups_info_html: bs4.element.ResultSet = (
+    startups_info_html: ResultSet = (
         country_startups_page_parser.find_all(class_="industries-inner")
     )
     if not startups_info_html:
@@ -56,7 +57,7 @@ def extract_country_startups_page_info(
         storage.append(startup_info)
 
 
-def extract_startup_info(html: bs4.element.ResultSet) -> dict[str, str]:
+def extract_startup_info(html: ResultSet) -> dict[str, str]:
     """
     Function takes a startup html block extracting information about it.
     Returns startup info in dictionary.
@@ -68,18 +69,29 @@ def extract_startup_info(html: bs4.element.ResultSet) -> dict[str, str]:
         startup_name: str = html.h2.text if html.h2 else "Unknown"
         # Startup idea text appears in next sibling after
         # first appearance of class "their-mission_text".
-        startup_idea_html: bs4.element.ResultSet = html.find(
+        startup_idea_html: ResultSet = html.find(
             class_="their-mission_text"
         )
         startup_idea_text: str = startup_idea_html.next_sibling.text if (
             startup_idea_html and startup_idea_html.next_sibling
             ) else "Unknown"
-
         startup_info["Name"] = startup_name
         startup_info["Idea"] = startup_idea_text
 
+        # Extract startup industry.
+        # Startup industry is on the startup page.
+        startup_url: str = extract_startup_url(startup_html=html)
+        if not startup_url:
+            logging.warning(
+                msg=f"startup url was not found for {startup_name}"
+            )
+
+        startup_info["Industry"] = (
+            extract_startup_industry(startup_url=startup_url)
+        )
+
         # All startup additional info parts are in classes "company_info".
-        info_parts_html: bs4.element.ResultSet = html.find_all(
+        info_parts_html: ResultSet = html.find_all(
             class_="company-info"
         )
 
@@ -106,10 +118,54 @@ def extract_startup_info(html: bs4.element.ResultSet) -> dict[str, str]:
     return startup_info
 
 
+def extract_startup_industry(startup_url: str) -> str:
+    """
+    Function takes a startup page url.
+    Extracts from the page startup's industry and returns it.
+    """
+    try:
+        startup_page_parser: BeautifulSoup = parse_url(startup_url)
+    except requests.exceptions.RequestException as error:
+        logging.warning(
+            msg=f"Error fetching startup URL {startup_url}: {error}"
+        )
+        return
+
+    startup_industry_html: ResultSet = (
+        startup_page_parser.find(class_="pill blue")
+    )
+    if not startup_industry_html:
+        logging.info(msg=f"Startup industry was not found on {startup_url}")
+        return "Unknown"
+
+    industry: str = startup_industry_html.text
+
+    return industry
+
+
+def extract_startup_url(
+    startup_html: Tag,
+    url_base: str = "https://www.spacebandits.io"
+) -> str:
+    """
+    Function extracts startup url ending from a startup html part and
+    concatenates this with url base.
+    Returns full startup url.
+    """
+    url_end: str = startup_html.a["href"]
+
+    if not url_end:
+        return
+
+    return url_base + url_end
+
+
 def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
-        filename="C:\\Users\\artjo\\.vscode\\Space StartUps\\implementation\\data_scrapping\\logs.log",
+        filename=(
+            "C:\\Users\\artjo\\.vscode\\Space StartUps\\implementation\\data_scrapping\\logs.log"
+        ),
         format="%(levelname)s - %(message)s\tLine: %(lineno)s",
         filemode="w"
     )
@@ -129,22 +185,20 @@ def main() -> None:
         )
         return
 
-    countries: bs4.element.ResultSet = countries_page_parser.find_all(
+    countries: ResultSet = countries_page_parser.find_all(
         class_="w-dyn-item"
     )
     if not countries:
         logging.critical(msg=f"No countries found on {countries_page_url}")
         return
 
-    country_startups_page_url: str = None
-    country_startups_page_url_end: str = None
     for country in countries:
         # "a" tag with "href" contains the end of country startup url.
         if not (country.a or country.a["href"]):
             logging.warning(msg="A country page or url was not found")
             continue
-        country_startups_page_url_end = country.a["href"].strip()
-        country_startups_page_url = urljoin(
+        country_startups_page_url_end: str = country.a["href"].strip()
+        country_startups_page_url: str = urljoin(
             base=url_base,
             url=country_startups_page_url_end
         )
