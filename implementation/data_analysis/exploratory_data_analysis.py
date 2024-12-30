@@ -143,10 +143,10 @@ main_data.insert(
 #print(main_data.head())
 
 # Checking for anomalies in values.
-# for column in main_data.columns:
-#     print(main_data[column].unique()) if not column in [
-#         "name", "amount_raised(usd)"
-#     ] else None
+for column in main_data.columns:
+    print(main_data[column].unique()) if not column in [
+        "name", "amount_raised(usd)"
+    ] else None
 
 pd.set_option("display.float_format", "{:.0f}".format)
 print(main_data.describe().T)
@@ -197,7 +197,7 @@ for column in numerical_columns:
 - There a few outliers, which are 20-35 years old.
 - Overwhelming majority of space startups have zero raised amount, 
     much less amount are close to zero - 0-200 000 000.
-    There are a few outliers with about
+    There are a few outliers (3) with about
     1 000 000 000 - 3 000 000 000 amount raised.
 """
 
@@ -517,6 +517,4 @@ plt.close()
 - Startup age has a moderate positive correlation to raised amount (0.41) and
     current funding level (0.36).
 """
-
-
 

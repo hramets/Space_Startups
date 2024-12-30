@@ -164,7 +164,7 @@ def main() -> None:
     logging.basicConfig(
         level=logging.INFO,
         filename=(
-            "C:\\Users\\artjo\\.vscode\\Space StartUps\\implementation\\data_scrapping\\logs.log"
+            "C:\\Users\\artjo\\.vscode\\Space StartUps\\implementation\\data_scrapping\\data_scrap_logs.log"
         ),
         format="%(levelname)s - %(message)s\tLine: %(lineno)s",
         filemode="w"
