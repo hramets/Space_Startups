@@ -1,125 +1,174 @@
+import logging
 import pandas as pd
 import numpy as np
 from numpy.typing import NDArray
 
 
+error_logger: logging.Logger = logging.getLogger("debug_logger")
+error_logger.setLevel(logging.WARNING)
+error_handler: logging.FileHandler = logging.FileHandler(
+    filename="error_logger.log", mode="w"
+)
+error_formatter = logging.Formatter(
+    fmt="%(name)s %(asctime)s %(message)s\nLine: %(lineno)s"
+)
+error_handler.setFormatter(fmt=error_formatter)
+error_logger.addHandler(hdlr=error_handler)
+
+debug_logger: logging.Logger = logging.getLogger("debug_logger")
+debug_logger.setLevel(logging.DEBUG)
+debug_handler: logging.FileHandler = logging.FileHandler(
+    filename="debug_logger.log", mode="w"
+)
+debug_formatter = logging.Formatter(fmt="%(name)s %(asctime)s %(message)s\nLine: %(lineno)s")
+debug_handler.setFormatter(fmt=debug_formatter)
+debug_logger.addHandler(hdlr=debug_handler)
+
+
 class KMeans:
     
-    def __init__(self, data: pd.DataFrame, k: int):
-        self.data: pd.DataFrame = data
-        self.clusters: dict[int, dict[str, list | NDArray]] = {}
+    def __init__(self, data: pd.DataFrame | NDArray, k: int):
+        self.data: NDArray = np.asarray(data)
         self.k = k
-    
+        self.clusters: dict[
+            tuple[np.float64], list[NDArray[np.float64]]
+        ] = {}
+
     @staticmethod
     def euclidean_distance(
-        p1: NDArray[np.float64 | np.int64],
-        p2: NDArray[np.float64 | np.int64]
-    ) -> np.float64:
+        data1: NDArray[np.float64 | np.int64],
+        data2: NDArray[np.float64 | np.int64]
+    ) -> np.float64 :
         """
         Method calculate Euclidean distance between two points.
         """
-        return np.sqrt(np.sum((p1 - p2)**2))
+        return np.sqrt(np.sum(a=(data1 - data2)**2, axis=1))
       
-    def initialize_centroids(self):
+    def kmeans_plusplus(self):
         """
-        Method defines random initial centroids.
-        Then it initializes storages for clusters' data and
-        adds centroids to it.
+        Method implements K-Means++ algorithm to initialize centroids.
+        Adds centorids to clusters dictionary.
         """
-        if self.data.empty:
-            raise ValueError("Data cannot be empty.")
-        if not self.k:
-            raise ValueError("k must be defined.")
-        
-        # Creating random centroids within the data scale.
-        centroids: NDArray[np.float64] = np.random.uniform(
-            low=min(np.amin(a=self.data, axis=0)),
-            high=max(np.amax(a=self.data, axis=0)),
-            size=(self.k, self.data.shape[1])
+        # Initializing the first centroid.
+        random_centorid: NDArray[np.int64] = (
+            self.data[np.random.randint(low=0, high=len(self.data))]
         )
+        centroids: list[NDArray[np.float64]] = [random_centorid]
 
-        for ind, centroid in enumerate(centroids):
-            self.clusters[ind] = {}
-            self.clusters[ind]["centroid"] = centroid
-            self.clusters[ind]["points"] =  []
-
-    def assign_clusters(self) -> None:
-        """
-        Method assigns data points to the centorids.
-        It finds the smallest distance between points and centroids.
-        Adds points to the corresponding clusters.
-        """
-        if self.clusters == {}:
-            raise KeyError("Centroids are not initialized.")
-
-        data: NDArray[np.float64] = np.asarray(self.data) 
-        for _, data_point in enumerate(data):
-            distances: list[np.float64] = []
-
-            for cluster in range(self.k):
-                centroid_point: NDArray[np.float64 | np.int64] = (
-                    self.clusters[cluster]["centroid"]
-                )
-                distances.append(
-                    self.euclidean_distance(p1=centroid_point, p2=data_point)
-                )
-
-            min_dist_centroid: np.int64 = (
-                distances.index(min(distances))
-            )
-            self.clusters[min_dist_centroid]["points"].append(data_point)
-
-    def update_clusters(self) -> None:
-        """
-        Method updates clusters. It redefines centroids by
-        calculating data points' mean. 
-        Removes data points from dictionary with clusters.
-        """
-        for cluster in range(self.k):
-            new_centroid_point: NDArray[np.float64] = (
-                np.mean(a=np.asarray(self.clusters[cluster]["points"]), axis=0)
-            )
-            self.clusters[cluster]["centroid"] = new_centroid_point
-            self.clusters[cluster]["points"] = []
-     
-    @staticmethod       
-    def stop_training(
-        old_centroids: NDArray[np.float64],
-        new_centroids: NDArray[np.float64],
-        stop_diff: float
-    ) -> bool:
-        """
-        Method calculates a difference between old and new centroid points.
-        If the difference is equal or smaller than the defined one -
-        return True, otherwise False.
-        """
-        stop: bool = False
-        if np.amax(np.sqrt((old_centroids - new_centroids)**2)) <= stop_diff:
-            stop = True
+        for _ in range(self.k - 1):
+            # Calculating distances from all centroids to data points
+            distances: NDArray = [
+                (
+                    self.euclidean_distance(
+                        data1=centroids[ind],
+                        data2=self.data
+                    )
+                ) for ind in range(len(centroids))
+            ]
             
-        return stop
+            min_distances: NDArray = np.min(a=np.asarray(distances), axis=0)
+            debug_logger.debug(
+                msg=f"Min distances: {min_distances}"
+            )
+        
+            next_centroid_probabilities: NDArray[np.float64] = (
+                min_distances / np.sum(min_distances)
+            )
+
+            # Sorted positions of probabilities' indexes
+            sorted_probabilities_inds: NDArray[np.int64] = np.argsort(
+                next_centroid_probabilities
+            )
+            debug_logger.debug(
+                msg=f"sorted probabilities' indexes: {sorted_probabilities_inds}"
+            )
+            
+            sorted_probabilities: NDArray[np.float64] = (
+                next_centroid_probabilities[sorted_probabilities_inds]
+            )
+            cumulative_probabilities: NDArray[np.float64] = (
+                np.cumsum(sorted_probabilities)
+            )
+            
+            random_n: float = np.random.rand()
+            # Points have the same indexes as their probabilities since
+            # order has not changed.
+            ind_of_point_ind: int = (
+                np.searchsorted(a=cumulative_probabilities, v=random_n)
+            ) # index of a point's index
+            next_centroid: NDArray[np.float64] = self.data[
+                sorted_probabilities_inds[ind_of_point_ind]
+            ]
+            
+            centroids.append(next_centroid)
+        
+        debug_logger.debug(msg=f"List of centroids: {centroids}")
+
+        for centroid in centroids:
+            # NDArray unhashable object
+            self.clusters[tuple(centroid)] = []
+
+    def assign_points_to_centroids(self):
+        """
+        Method assigns data points to the closest centroids.
+        """
+        # Calculating distances from all centroids to data points
+        all_centroids_distances: list[NDArray] = [
+            (
+                self.euclidean_distance(
+                    data1=centroid,
+                    data2=self.data
+                )
+            ) for centroid in self.clusters.keys()
+        ]
+        
+        closest_centroids_indicies: NDArray[np.int64] = (
+            np.argmin(a=all_centroids_distances, axis=0)
+        )
+        
+        for ind, centroid_ind in enumerate(closest_centroids_indicies):
+            closest_centroid: NDArray[np.float64] = (
+                list(self.clusters.keys())[centroid_ind]
+            )
+            self.clusters[closest_centroid].append(self.data[ind])
+        
+        debug_logger.debug(msg=f"clusters:\n{self.clusters}")
+        
+    def get_inertia(self) -> np.float64:
+        """
+        Method calculates interia for final clusters.
+        """
+        # If no cluster points' list is not empty - fit_model was not implemented.
+        empty_clusters: bool = True
+        for points in self.clusters.values():
+            debug_logger.debug(
+                msg=f"points:\n{points}"
+            )
+            if points != []:
+                empty_clusters = False
+
+        if empty_clusters:    
+            error_logger.warning(msg="There are empty clusters.")
+        
+        inertia: float = 0.0
+        for ind, points in enumerate(self.clusters.values()):
+            if points != []:
+                centroid: NDArray[np.float64] = (
+                    list(self.clusters.keys())[ind]
+                )
+                inertia += np.sum((centroid - np.asarray(points))**2)
+                     
+        return inertia
     
-    def fit_model(self) -> None:
-        """
-        Method fits k-mean clustering model. Uses the methods from class.
-        As result - clusters instance with final clusters data.
-        """
-        self.initialize_centroids()
-
-        stop: bool = False
-        while not stop:
-            old_centroids: list[NDArray[np.int64 | np.float64]] = [
-                self.clusters[cluster]["centroid"] for cluster in range(self.k)
-            ]
+    def get_best_result(self, runs: int):
+        results: dict[np.float64, dict[NDArray, list[NDArray]]] = {}
+        for _ in range(runs):
+            self.kmeans_plusplus()
+            self.assign_points_to_centroids()
+            inertia: np.float64 = self.get_inertia()
+            results[inertia] = self.clusters
             
-            self.assign_clusters()
-            self.update_clusters()
-            
-            new_centroids: list[NDArray[np.float64]] = [
-                self.clusters[cluster]["centroid"] for cluster in range(self.k)
-            ]
-            stop = self.stop_training(
-                old_centroids=np.asarray(old_centroids),
-                new_centroids=np.asarray(new_centroids),
-                stop_diff=0.0001
-            )
+        best_inertia: np.float64 = min(results.keys())
+        best_result: dict[NDArray, NDArray] = results[best_inertia]
+        
+        return best_result

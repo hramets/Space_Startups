@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings('ignore')
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,6 +9,7 @@ import json
 import datetime
 import logging
 from typing import Callable
+from kmeans_class import KMeans
 
 
 ## Adjusting logging
@@ -49,12 +52,12 @@ data: pd.DataFrame = pd.DataFrame(data=data)
 # While data scrapping not founded values were recorded as "Unknown" or "".
 data = data.replace(to_replace=["Unknown", ""], value=None)
 
-print(data.info())  # =>
+#print(data.info())  # =>
 """
 - Data has 130 rows and 7 columns.
 - Only Industry column has one null-value.
 """
-print(data[data["Industry"].isnull()]) # =>
+#print(data[data["Industry"].isnull()]) # =>
 """
 NewRocket startup has no industry on page.
 According to the startup's description, the Launch industry fits here.
@@ -62,7 +65,7 @@ According to the startup's description, the Launch industry fits here.
 newrocket_ind: int = data[data.Name == "NewRocket"].index.item()
 data.at[newrocket_ind, "Industry"] = "Launch"
 
-print(data.nunique()) # =>
+#print(data.nunique()) # =>
 """
 Name and Idea columns have all the 130 values unique.
 Data contains:
@@ -75,7 +78,7 @@ Data contains:
 ....
 """
 
-print(data.columns) # =>
+#print(data.columns) # =>
 """
 All columns are renamed for dataframe readability.
 Also, columns Location, Founded, Idea are concretized.
@@ -110,7 +113,7 @@ Column Idea is excluded from the main dataframe. It is not relevant for EDA.
 idea_data: pd.DataFrame = data[["name", "description"]]
 main_data: pd.DataFrame = data.drop(columns="description", axis=1)
 
-print(main_data.head())
+#print(main_data.head())
 
 # Changing columns' types.
 main_data["year_founded"] = (
@@ -143,13 +146,13 @@ main_data.insert(
 #print(main_data.head())
 
 # Checking for anomalies in values.
-for column in main_data.columns:
-    print(main_data[column].unique()) if not column in [
-        "name", "amount_raised(usd)"
-    ] else None
+# for column in main_data.columns:
+#     print(main_data[column].unique()) if not column in [
+#         "name", "amount_raised(usd)"
+#     ] else None
 
 pd.set_option("display.float_format", "{:.0f}".format)
-print(main_data.describe().T)
+#print(main_data.describe().T)
 """
 - Space startups' foundation years - 1989-2021.
 - The oldest space startup is 35 years old, the youngest - 3
@@ -187,7 +190,7 @@ for column in numerical_columns:
         else:
             ax.xaxis.set_minor_locator(MultipleLocator(1))
         ax.yaxis.set_major_locator(MaxNLocator(integer=True)) 
-    plt.savefig(f"{image_save_dir}{column}_skew.png")
+    #plt.savefig(f"{image_save_dir}{column}_skew.png")
     plt.close(fig=fig)
 """
 - Space startups were started to be actively developed in around 2005.
@@ -207,7 +210,7 @@ fig, axs = plt.subplots(
     figsize=(18, 15),
     layout="constrained"
 )
-print(categorical_columns)
+#print(categorical_columns)
 cat_column_ind: int = 0
 for row in range(3):
     for column in range(2):
@@ -242,7 +245,7 @@ for row in range(3):
         break
 axs[2, 1].remove()
 
-plt.savefig(f"{image_save_dir}categorical_unvariate_observ.png")
+#plt.savefig(f"{image_save_dir}categorical_unvariate_observ.png")
 plt.close(fig=fig)
 """
 Categorical data countplots:
@@ -277,14 +280,14 @@ numerical_pairplot: sns.PairGrid = sns.pairplot(
     aspect=1
 )
 numerical_pairplot.figure.set_constrained_layout(True)
-plt.savefig(f"{image_save_dir}numerical_bivariate_observ.png")
+#plt.savefig(f"{image_save_dir}numerical_bivariate_observ.png")
 plt.close()
 """
 - Startup age has positive correlation with raised amount.
   Hence founding year has negative correlation with raised amount.
 """
 
-print(categorical_columns, numerical_columns, sep="\n")
+#print(categorical_columns, numerical_columns, sep="\n")
 
 fig, axs = plt.subplots(
     nrows=4, ncols=3, layout="constrained", figsize=(18, 25)
@@ -441,7 +444,7 @@ sns.barplot(
 axs[3, 2].set_title("Funding_lvl VS Amount_raised(USD)")
 
 
-plt.savefig(f"{image_save_dir}categorical_bivariate_observ.png")
+#plt.savefig(f"{image_save_dir}categorical_bivariate_observ.png")
 plt.close()
 
 """
@@ -505,7 +508,7 @@ correlation_data = correlation_data.drop(
 plt.figure(figsize=(12, 7), layout="constrained")
 sns.heatmap(data=correlation_data.corr(), vmin=-1, vmax=1, annot=True)
 
-plt.savefig(f"{image_save_dir}correlation_multivariate.png")
+#plt.savefig(f"{image_save_dir}correlation_multivariate.png")
 plt.close()
 
 """
@@ -518,3 +521,51 @@ plt.close()
     current funding level (0.36).
 """
 
+### Additional Analysis
+
+## KMeans clustering
+"""
+It makes sense to use variables with low correlation.
+According to the correlation visualization the next combinations appropriate
+to k-means clustering:
+    1. current_funding_level(num), startup_age
+        (correlation - 0.36) 
+    2. startups_age, amount_raised_log
+        (correlation - 0.41)
+    3. current_funding_level(num)[1], startup_age[2], amount_raised_log[3]
+        (correlation - 1-2=>0.36, 1-3=>0.7, 2-3=>0.41)
+"""
+data_for_kmeans1: pd.DataFrame = main_data[
+    ["current_funding_level(num)", "startup_age"]
+]
+data_for_kmeans2: pd.DataFrame = main_data[
+    ["startup_age", "amount_raised_log"]
+]
+data_for_kmeans3: pd.DataFrame = main_data[
+    ["current_funding_level(num)", "startup_age", "amount_raised_log"]
+]
+kmeans_combinations: list[pd.DataFrame] = [
+    data_for_kmeans1, data_for_kmeans2, data_for_kmeans3
+]
+k_variants: list[int] = list(range(1, 11))
+
+def get_kmeans_elbow_data(
+    data: pd.DataFrame, k_variants: list[int]
+) -> dict[int, np.float64]:
+    
+    elbow_data: dict[int, np.float64] = {}
+    for k in k_variants:
+        kmeans: KMeans = KMeans(data=data, k=k)
+        kmeans.fit_model()
+        elbow_data[k] = kmeans.get_interia()
+        
+    return elbow_data
+
+elbow_data: dict[int, np.float64] = (
+    get_kmeans_elbow_data(data=data_for_kmeans1, k_variants=k_variants)
+)
+
+fig, ax = plt.subplots()
+ax.plot(elbow_data.keys(), elbow_data.values())
+plt.show()
+        

@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 from implementation.data_analysis.kmeans_class import KMeans
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from numpy.typing import NDArray
 
 
@@ -16,144 +17,73 @@ class TestKMeansClass(unittest.TestCase):
         self.kmeans: KMeans = KMeans(data=dataframe, k=k)
 
     def test_euclidean_distance(self):
-            self.kmeans.initialize_centroids()
-            random_centroid: NDArray[np.float64] = self.kmeans.clusters[
-                np.random.randint(low=0, high=self.kmeans.k)
-            ]["centroid"]
             data: NDArray = np.asarray(self.kmeans.data)
-            
-            positive_n: bool = True
-            for point in data:
-                result: np.float64 = self.kmeans.euclidean_distance(
-                    p1=random_centroid, p2=point
+            random_centroid: NDArray[np.float64] = (
+                data[np.random.randint(low=0, high=len(data))]
                 )
-                if result < 0:
-                    positive_n = False
-                    break
-    
+            
+            distances: NDArray = self.kmeans.euclidean_distance(
+                data1=random_centroid, data2=data
+            )
+            print(data.shape, distances)
             self.assertEqual(
-                first=positive_n,
-                second=True,
-                msg="While calculating Euclidean distance a negative number was got."
+                first=distances.shape,
+                second=(len(data),),
+                msg="Method does not count all data points' distances with centroid"
             )
-  
-    def test_initialize_centroids(self):
-        self.kmeans.initialize_centroids()
-        
-        correct_centroid_shape: bool = True
-        for cluster in range(self.kmeans.k):
-            centroid_point: NDArray[np.float64] = self.kmeans.clusters[cluster]["centroid"]
-            if centroid_point.shape != (3,):
-                correct_centroid_shape = False
-                break
-        
-        self.assertTrue(
-            first=correct_centroid_shape,
-            second=True,
-            msg="Incorrect centroids' shape"
+
+    def test_kmeans_plusplus(self):
+        self.kmeans.kmeans_plusplus()
+        self.assertEqual(
+            first=len(self.kmeans.clusters.keys()),
+            second=self.kmeans.k,
+            msg="Number of centroids is not equal to defined k."
         )
 
-    def test_assign_clusters(self):
-        self.kmeans.initialize_centroids()
-        self.kmeans.assign_clusters()
-        
-        random_cluster: NDArray[np.float64] = np.random.randint(
-            low=0, high=self.kmeans.k
-        )
-        data_point_shape: tuple[int] = (
-            self.kmeans.clusters[random_cluster]["points"][
-                np.random.randint(
-                    low=0, high=len(
-                        self.kmeans.clusters[random_cluster]["points"]
-                    )
-                )
-            ].shape
-        )
-        
-        self.assertEqual(
-            first=data_point_shape,
-            second=(3,),
-            msg="Incorrect data points' shape"
-        )
-        
-    def test_update_clusters(self):
-        self.kmeans.initialize_centroids()
-        self.kmeans.assign_clusters()
-        
-        old_centroids: list[NDArray] = (
-            [
-                self.kmeans.clusters
-                [
-                    cluster
-                ]
-                [
-                    "centroid"
-                ] for cluster in range(self.kmeans.k)
-            ]
-        )
-        self.kmeans.update_clusters()
-        new_centroids: list[NDArray] = (
-            [
-                self.kmeans.clusters
-                [
-                    cluster
-                ]
-                [
-                    "centroid"
-                ] for cluster in range(self.kmeans.k)
-            ]
+        centroids: list[NDArray[np.float64]] = list(self.kmeans.clusters.keys())
+        for i in range(len(centroids)):
+            for j in range(i + 1, len(centroids)):
             
-        )
+                self.assertFalse(
+                    expr=np.array_equal(a1=centroids[i], a2=centroids[j]),
+                    msg="Centorids have the same position."
+                )
+            
+    def test_assign_points_to_centroids(self):
+        self.kmeans.kmeans_plusplus()
+        self.kmeans.assign_points_to_centroids()
 
-        self.assertEqual(
-            first=np.array_equal(a1=old_centroids, a2=new_centroids),
-            second=False,
-            msg="Centroids are not updated."
-        )
-        self.assertEqual(
-            first=self.kmeans.clusters[
-                np.random.randint(low=0, high=self.kmeans.k)
-            ]["points"],
-            second=[],
-            msg="Points are not updated"
-        )
-        
-    def test_stop_training(self):
-        old_centroids: NDArray[np.int64] = np.asarray([10, 5, 1])
-        new_centroids: NDArray[np.int64] = np.asarray([1, 2, 3])
-        
-        result_true: bool = self.kmeans.stop_training(
-            old_centroids=old_centroids,
-            new_centroids=new_centroids,
-            stop_diff=9
+        for centroid in self.kmeans.clusters.keys():
+            print(self.kmeans.clusters[centroid])
+            self.assertTrue(
+                expr=all(self.kmeans.clusters[centroid]),
+                msg="Here are empty clusters."
             )
-        result_false: bool = self.kmeans.stop_training(
-            old_centroids=old_centroids,
-            new_centroids=new_centroids,
-            stop_diff=7
-            )
-        
-        self.assertTrue(
-            expr=result_true is True,
-            msg="Function stop_training defines when to stop incorrectly."
-        )
-        self.assertTrue(
-            expr=result_false is False,
-            msg="Function stop_training defines when to continue training incorrectly."
-        )
-        
-    def test_fit_model(self):
-        self.kmeans.stop_training = MagicMock(
-            side_effect=[False, False, False, True]
-        )
-        self.kmeans.fit_model()
-        
-        self.assertEqual(
-            first=self.kmeans.stop_training.call_count,
-            second=4,
-            msg="Error"
-        )
 
+    def test_get_inertia(self):
+        self.kmeans.kmeans_plusplus()
+        self.kmeans.assign_points_to_centroids()
+        
+        inertia: np.float64 = self.kmeans.get_inertia()
+        
+        self.assertNotEqual(
+            first=inertia,
+            second=0.0,
+            msg="Inertia calculation is not implemented."
+        )
+        
+    def test_get_best_result(self):
+        self.kmeans.kmeans_plusplus()
+        self.kmeans.assign_points_to_centroids()
+        best_result: dict[NDArray, list[NDArray]] = (
+            self.kmeans.get_best_result(10)
+        )
+        self.assertIsNot(
+            expr1=best_result,
+            expr2={},
+            msg="Result is empty."
+        )
+        
 
 if __name__ == "__main__":
     unittest.main()
