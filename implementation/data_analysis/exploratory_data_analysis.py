@@ -10,7 +10,7 @@ import json
 import datetime
 import logging
 from typing import Callable, Iterable
-from kmeans_class import KMeans
+
 
 
 ## Adjusting logging
@@ -34,23 +34,6 @@ debug_handler: logging.FileHandler = logging.FileHandler(
 debug_formatter = logging.Formatter(fmt="%(name)s %(asctime)s %(message)s\nLine: %(lineno)s")
 debug_handler.setFormatter(fmt=debug_formatter)
 debug_logger.addHandler(hdlr=debug_handler)
-
-
-### FUNCTIONS
-
-def get_kmeans_elbow_data(
-        data: pd.DataFrame, k_variants: list[int]
-    ) -> dict[int, np.float64]:
-        
-        elbow_data: dict[int, np.float64] = {}
-        for k in k_variants:
-            kmeans: KMeans = KMeans(data=data, k=k)
-            kmeans.kmeans_plusplus()
-            kmeans.assign_points_to_centroids()
-            
-            elbow_data[k] = kmeans.get_inertia()
-            
-        return elbow_data
 
 
 ### EDA
@@ -554,33 +537,32 @@ to k-means clustering:
         (correlation - 1-2=>0.36, 1-3=>0.7, 2-3=>0.41)
 """
 
-# To implement kmeans on the data.
-#main_data.to_csv(path_or_buf="assets/data/for_kmeans.csv")
+# PS. The KMeans implementation is in kmeans_implementation.py
 
 # 1st kmeans combination
 
 """
-KMeans algorithm does not show any interesting connection between 
-current_funding_leven(num) and startup_age. It segregates them according to
-startup_age.
+The KMeans algorithm does not reveal any significant relationship between 
+current_funding_leven(num) and startup_age. Instead, it primarily
+segregates startups based on their startup_age.
 """
 
 # 2nd kmeans combination
 
 """
-Kmeans algorithm defines 3 clusters with patterns. According to visualization
+The KMeans algorithm identifies three distinct clusters with
+recognizable patterns. Based on the visualization these
 groups can be defined as:
-    1. Startups without any amounts raised
-    2. Developing startups that raised some amount
-    3. Developed startups that raised some amount
+    1. Startups with no funding raised
+    2. Developing startups that raised some funds
+    3. Developed startups that raised some funds
 Insights:
-    - Mostly developed space startups have raised some amounts.
+    - Most developed space startups have secured some level of funding.
 """
 
 # 3rd kmeans combination
 
 """
-KMeans algorithm does not show any interesting connection between 
-current_funding_leven(num), startup_age and amount_raised_log.
+The KMeans algorithm does not reveal any significant relationship
+between current_funding_leven(num), startup_age and amount_raised_log.
 """
-
