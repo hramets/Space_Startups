@@ -2,13 +2,14 @@ import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
 import numpy as np
+from numpy.typing import NDArray
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter, MultipleLocator, MaxNLocator
 import seaborn as sns
 import json
 import datetime
 import logging
-from typing import Callable
+from typing import Callable, Iterable
 from kmeans_class import KMeans
 
 
@@ -33,6 +34,23 @@ debug_handler: logging.FileHandler = logging.FileHandler(
 debug_formatter = logging.Formatter(fmt="%(name)s %(asctime)s %(message)s\nLine: %(lineno)s")
 debug_handler.setFormatter(fmt=debug_formatter)
 debug_logger.addHandler(hdlr=debug_handler)
+
+
+### FUNCTIONS
+
+def get_kmeans_elbow_data(
+        data: pd.DataFrame, k_variants: list[int]
+    ) -> dict[int, np.float64]:
+        
+        elbow_data: dict[int, np.float64] = {}
+        for k in k_variants:
+            kmeans: KMeans = KMeans(data=data, k=k)
+            kmeans.kmeans_plusplus()
+            kmeans.assign_points_to_centroids()
+            
+            elbow_data[k] = kmeans.get_inertia()
+            
+        return elbow_data
 
 
 ### EDA
@@ -284,7 +302,7 @@ numerical_pairplot.figure.set_constrained_layout(True)
 plt.close()
 """
 - Startup age has positive correlation with raised amount.
-  Hence founding year has negative correlation with raised amount.
+Hence founding year has negative correlation with raised amount.
 """
 
 #print(categorical_columns, numerical_columns, sep="\n")
@@ -535,37 +553,34 @@ to k-means clustering:
     3. current_funding_level(num)[1], startup_age[2], amount_raised_log[3]
         (correlation - 1-2=>0.36, 1-3=>0.7, 2-3=>0.41)
 """
-data_for_kmeans1: pd.DataFrame = main_data[
-    ["current_funding_level(num)", "startup_age"]
-]
-data_for_kmeans2: pd.DataFrame = main_data[
-    ["startup_age", "amount_raised_log"]
-]
-data_for_kmeans3: pd.DataFrame = main_data[
-    ["current_funding_level(num)", "startup_age", "amount_raised_log"]
-]
-kmeans_combinations: list[pd.DataFrame] = [
-    data_for_kmeans1, data_for_kmeans2, data_for_kmeans3
-]
-k_variants: list[int] = list(range(1, 11))
 
-def get_kmeans_elbow_data(
-    data: pd.DataFrame, k_variants: list[int]
-) -> dict[int, np.float64]:
-    
-    elbow_data: dict[int, np.float64] = {}
-    for k in k_variants:
-        kmeans: KMeans = KMeans(data=data, k=k)
-        kmeans.fit_model()
-        elbow_data[k] = kmeans.get_interia()
-        
-    return elbow_data
+# To implement kmeans on the data.
+#main_data.to_csv(path_or_buf="assets/data/for_kmeans.csv")
 
-elbow_data: dict[int, np.float64] = (
-    get_kmeans_elbow_data(data=data_for_kmeans1, k_variants=k_variants)
-)
+# 1st kmeans combination
 
-fig, ax = plt.subplots()
-ax.plot(elbow_data.keys(), elbow_data.values())
-plt.show()
-        
+"""
+KMeans algorithm does not show any interesting connection between 
+current_funding_leven(num) and startup_age. It segregates them according to
+startup_age.
+"""
+
+# 2nd kmeans combination
+
+"""
+Kmeans algorithm defines 3 clusters with patterns. According to visualization
+groups can be defined as:
+    1. Startups without any amounts raised
+    2. Developing startups that raised some amount
+    3. Developed startups that raised some amount
+Insights:
+    - Mostly developed space startups have raised some amounts.
+"""
+
+# 3rd kmeans combination
+
+"""
+KMeans algorithm does not show any interesting connection between 
+current_funding_leven(num), startup_age and amount_raised_log.
+"""
+

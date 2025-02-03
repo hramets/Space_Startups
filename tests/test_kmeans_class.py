@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from implementation.data_analysis.kmeans_class import KMeans
+from implementation.data_analysis.kmeans_implementation import KMeans
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
