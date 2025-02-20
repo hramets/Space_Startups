@@ -522,7 +522,7 @@ plt.close()
     current funding level (0.36).
 """
 
-### Additional Analysis
+### ADDITIONAL ANALYSIS
 
 ## KMeans clustering
 """
@@ -565,4 +565,169 @@ Insights:
 """
 The KMeans algorithm does not reveal any significant relationship
 between current_funding_leven(num), startup_age and amount_raised_log.
+"""
+
+
+## Additional analysis
+
+
+main_data["growing_rate"] = (
+    main_data["startup_size(num)"] / main_data["startup_age"]
+)
+main_data["sustainability_rate"] = (
+    main_data["startup_age"] * main_data["startup_size(num)"]
+)
+
+# Industries
+
+fig, axs = plt.subplots(
+    nrows=2,
+    ncols=2,
+    layout="constrained",
+    figsize=(15, 10)
+)
+
+data = main_data.groupby("industry")["industry"].count().sort_values(
+    ascending=False
+)
+axs[0, 0].set_ylabel(ylabel="count")
+axs[0, 0].set_xlabel(xlabel="industry")
+sns.barplot(data=data, palette="viridis", orient="h", ax=axs[0, 0])
+
+
+data = main_data.groupby("industry")["current_funding_level(num)"].mean().sort_values(
+    ascending=False
+)
+axs[0, 1].set_ylabel(ylabel="average funding_level")
+axs[0, 1].set_xlabel(xlabel="industry")
+sns.barplot(data=data, palette="viridis", orient="h", ax=axs[0, 1])
+
+
+data = main_data.groupby("industry")["growing_rate"].mean().sort_values(
+    ascending=False
+)
+axs[1, 0].set_ylabel(ylabel="growing_rate")
+axs[1, 0].set_xlabel(xlabel="industry")
+sns.barplot(data=data, palette="viridis", orient="h", ax=axs[1, 0])
+
+data = main_data.groupby("industry")["sustainability_rate"].mean().sort_values(
+    ascending=False
+)
+axs[1, 1].set_ylabel(ylabel="sustainability_rate")
+axs[1, 1].set_xlabel(xlabel="industry")
+sns.barplot(data=data, palette="viridis", orient="h", ax=axs[1, 1])
+
+plt.savefig(f"{image_save_dir}industries_analysis.png")
+plt.close()
+
+"""
+- The largest number of space startups is in the satellite industry.
+    The second place is occupied by the space launch industry.
+- Space launch startups have reached the highest funding levels 
+    on average commpared to other industries. 
+    The space rover industry takes second place in this regard.
+- The space launch and the space software industries have the fastest growth.
+    The satellite industry takes third place
+    just after the space software industry.
+- The space rover industry is the most sustainable. Additionaly,
+    space launch, industrial and satellite startups are
+    relatively sustainable.
+- The space launch startups is a popular and fast-growing sector
+    with high funding levels. Moreover, this industry has held out
+    strongly in the market.
+The industiry statistics show a general toward early space exploration and
+reducing costs assiciated with exploration. 
+"""
+
+# Countries
+
+fig, axs = plt.subplots(
+    nrows=2,
+    ncols=2,
+    layout="constrained",
+    figsize=(15, 10)
+)
+
+data = main_data.groupby("country")["country"].count().sort_values(
+    ascending=False
+).head(10)
+axs[0, 0].set_ylabel(ylabel="count")
+axs[0, 0].set_xlabel(xlabel="country")
+sns.barplot(data=data, palette="viridis", orient="h", ax=axs[0, 0])
+
+
+data = main_data.groupby("country")["current_funding_level(num)"].mean().sort_values(
+    ascending=False
+).head(10)
+axs[0, 1].set_ylabel(ylabel="average funding_level")
+axs[0, 1].set_xlabel(xlabel="country")
+sns.barplot(data=data, palette="viridis", orient="h", ax=axs[0, 1])
+
+
+data = main_data.groupby("country")["growing_rate"].mean().sort_values(
+    ascending=False
+).head(10)
+axs[1, 0].set_ylabel(ylabel="growing_rate")
+axs[1, 0].set_xlabel(xlabel="country")
+sns.barplot(data=data, palette="viridis", orient="h", ax=axs[1, 0])
+
+data = main_data.groupby("country")["sustainability_rate"].mean().sort_values(
+    ascending=False
+).head(10)
+axs[1, 1].set_ylabel(ylabel="sustainability_rate")
+axs[1, 1].set_xlabel(xlabel="country")
+sns.barplot(data=data, palette="viridis", orient="h", ax=axs[1, 1])
+
+plt.savefig(f"{image_save_dir}countries_analysis.png")
+plt.close()
+
+"""
+- The largest number of startups is in the USA. The UK takes second place
+    with a significant gap.
+- China shows the fastest frowth in space startups.
+- Japan and China have the highest average funding levels.
+    Finland ranks third in this regard.
+- Japan is also the most sustainable country for space startups,
+    with Finland showing almost the same results. 
+    China takes the third place here.
+"""
+
+
+# Japan China Finland United Kingdom USA
+
+research_countries: list[str] = [
+    "United States", "China", "Finland", "United Kingdom", "Japan"
+]
+
+for country in research_countries:
+    data = main_data[main_data["country"] == country]
+    data = data.groupby("industry")["industry"].count().sort_values(ascending=False).head(3)
+    print(country, data, "\n\n", sep="\n")
+    
+"""
+The analysis shows, that Japan has only two space startups -
+in rover and satellite industires.
+Finland - 1 in Satellites.
+China - 2 in Launch.
+The USA focuses mostly on satellites (23) and space launches (14). Also, there are
+8 space infrastructure startups.
+The UK focuses on Industrials (4) and Launch (4).
+Also there are 2 space media education startups.
+"""
+
+# Outliers
+
+print(main_data[main_data["amount_raised(usd)"] > 500000000])
+print(main_data[main_data["startup_age"] > 20])
+
+"""
+Amount raised outliers:
+- OneWeb, Satellites, USA
+- SpaceX, Launch, USA
+- Blue Origin, Launch, USA
+Age outliers:
+- Reaction Engines, Industrials, UK
+- Ramon.Space, Satellites, USA
+- SpaceX, Launch, USA
+- Blue Origin, Launch, USA
 """
