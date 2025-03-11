@@ -1,0 +1,131 @@
+,current_funding_level(num),startup_size(num),name,industry,country,startup_age,startup_size,year_founded,employees_number,current_funding_level,amount_raised(usd),amount_raised_log,growing_rate,sustainability_rate
+0,0,1,Space Dynamix Marketing,Information Research,Australia,6,Very Small,2019,1-10,Self-funded,0,0.0,0.16666666666666666,6
+1,1,2,FluroSat,Satellites,Australia,9,Small,2016,11-50,Seed,8600000,15.967272877502799,0.2222222222222222,18
+2,0,1,Australia Space Launch,Logistics,Australia,8,Very Small,2017,1-10,Self-funded,0,0.0,0.125,8
+3,3,2,Gilmour Space,Launch,Australia,13,Small,2012,11-50,Series B,17533000,16.67959543448757,0.15384615384615385,26
+4,1,1,HEO Robotics,Information Research,Australia,9,Very Small,2016,1-10,Seed,0,0.0,0.1111111111111111,9
+5,2,2,Fleet,Infrastructure,Australia,10,Small,2015,11-50,Series A,5000000,15.424948670398354,0.2,20
+6,1,2,Enpulsion,Satellites,Austria,9,Small,2016,11-50,Seed,3998400,15.201405089162833,0.2222222222222222,18
+7,3,1,Maritime Launch Services,Launch,Canada,9,Very Small,2016,1-10,Series B,11000000,16.213405921671733,0.1111111111111111,9
+8,0,2,Leap Biosystems,Information Research,Canada,7,Small,2018,11-50,Self-funded,0,0.0,0.2857142857142857,14
+9,0,1,QEYNet,Satellites,Canada,9,Very Small,2016,1-10,Self-funded,0,0.0,0.1111111111111111,9
+10,2,2,GHGSat,Information Research,Canada,14,Small,2011,11-50,Series A,20000000,16.811242881518265,0.14285714285714285,28
+11,2,2,Kepler Communications,Satellites,Canada,10,Small,2015,11-50,Series A,21500000,16.88356353960952,0.2,20
+12,1,2,SkyWatch,Satellites,Canada,11,Small,2014,11-50,Seed,4200000,15.250595321348806,0.18181818181818182,22
+13,2,3,i-Space,Launch,China,9,Medium,2016,201-500,Series A,104500000,18.464697638938517,0.3333333333333333,27
+14,3,4,OneSpace,Launch,China,10,Large,2015,51-200,Series B,120200000,18.60466758838485,0.4,40
+15,2,4,Iceye,Satellites,Finland,13,Large,2012,51-200,Series A,65100000,17.99143512253978,0.3076923076923077,52
+16,1,2,Earthcube,Satellites,France,9,Small,2016,11-50,Seed,3300000,15.009433329466965,0.2222222222222222,18
+17,1,1,ConstellR,Satellites,Germany,5,Very Small,2020,1-10,Seed,0,0.0,0.2,5
+18,1,1,OKAPI:Orbits,Software,Germany,7,Very Small,2018,1-10,Seed,0,0.0,0.14285714285714285,7
+19,0,2,PT Scientists,Rovers,Germany,16,Small,2009,11-50,Self-funded,0,0.0,0.125,32
+20,1,1,HOSTmi,Logistics,Germany,7,Very Small,2018,1-10,Seed,0,0.0,0.14285714285714285,7
+21,0,1,Marstronauts,Media Education,Hungary,7,Very Small,2018,1-10,Self-funded,0,0.0,0.14285714285714285,7
+22,1,2,Pixxel,Satellites,India,7,Small,2018,11-50,Seed,0,0.0,0.2857142857142857,14
+23,0,1,STAR,Launch,India,10,Very Small,2015,1-10,Self-funded,0,0.0,0.1,10
+24,1,1,NewRocket,Launch,Israel,11,Very Small,2014,1-10,Seed,700000,13.45883704259595,0.09090909090909091,11
+25,1,1,Helios,Industrials,Israel,7,Very Small,2018,1-10,Seed,120000,11.695255355062795,0.14285714285714285,7
+26,0,1,May Marom,Infrastructure,Israel,6,Very Small,2019,1-10,Self-funded,0,0.0,0.16666666666666666,6
+27,1,1,Latitudo 40,Software,Italy,8,Very Small,2017,1-10,Seed,0,0.0,0.125,8
+28,2,4,ispace,Rovers,Japan,15,Large,2010,51-200,Series A,92300000,18.340554710307316,0.26666666666666666,60
+29,4,4,Astroscale,Satellites,Japan,12,Large,2013,51-200,Series C+,117700000,18.583649580726682,0.3333333333333333,48
+30,0,1,TimeTag.Space,Satellites,Latvia,7,Very Small,2018,1-10,Self-funded,0,0.0,0.14285714285714285,7
+31,0,2,Maana Electric,Industrials,Luxembourg,7,Small,2018,11-50,Self-funded,0,0.0,0.2857142857142857,14
+32,1,1,Sensar,Satellites,Netherlands,8,Very Small,2017,1-10,Seed,200000,12.206077645517674,0.125,8
+33,0,1,SpaceChain,Infrastructure,Singapore,8,Very Small,2017,1-10,Self-funded,0,0.0,0.125,8
+34,1,1,Asgard Space,Satellites,Spain,7,Very Small,2018,1-10,Seed,0,0.0,0.14285714285714285,7
+35,0,2,Alen Space,Satellites,Spain,6,Small,2019,11-50,Self-funded,0,0.0,0.3333333333333333,12
+36,1,2,Zero 2 Infinity,Launch,Spain,16,Small,2009,11-50,Seed,1600000,14.285514812209815,0.125,32
+37,2,4,PLD Space,Launch,Spain,14,Large,2011,51-200,Series A,19800000,16.801192546169812,0.2857142857142857,56
+38,1,1,Picterra,Satellites,Switzerland,9,Very Small,2016,1-10,Seed,0,0.0,0.1111111111111111,9
+39,0,1,ClearSpace,Satellites,Switzerland,8,Very Small,2017,1-10,Self-funded,0,0.0,0.125,8
+40,1,2,mu Space,Industrials,Thailand,8,Small,2017,11-50,Seed,3070000,14.937188445296226,0.25,16
+41,1,1,Black Arrow,Launch,United Kingdom,8,Very Small,2017,1-10,Seed,0,0.0,0.125,8
+42,0,1,Space Impulse,Logistics,United Kingdom,8,Very Small,2017,1-10,Self-funded,0,0.0,0.125,8
+43,0,1,ShipInSpace,Launch,United Kingdom,13,Very Small,2012,1-10,Self-funded,0,0.0,0.07692307692307693,13
+44,3,4,Reaction Engines,Industrials,United Kingdom,36,Large,1989,51-200,Series B,161700000,18.901253330731627,0.1111111111111111,144
+45,2,2,Isotropic Systems,Industrials,United Kingdom,12,Small,2013,11-50,Series A,20000000,16.811242881518265,0.16666666666666666,24
+46,1,4,Skyrora,Launch,United Kingdom,8,Large,2017,51-200,Seed,0,0.0,0.5,32
+47,1,1,Space Talos,Satellites,United Kingdom,7,Very Small,2018,1-10,Seed,0,0.0,0.14285714285714285,7
+48,1,1,Sen,Media Education,United Kingdom,11,Very Small,2014,1-10,Seed,1250000,14.038654909278163,0.09090909090909091,11
+49,1,2,Additive Rocket Corporation,Industrials,United Kingdom,10,Small,2015,11-50,Seed,0,0.0,0.2,20
+50,2,2,Orbex,Launch,United Kingdom,10,Small,2015,11-50,Series A,39800000,17.499377495380294,0.2,20
+51,1,1,UKAM,Information Research,United Kingdom,7,Very Small,2018,1-10,Seed,0,0.0,0.14285714285714285,7
+52,0,1,Space Store,Media Education,United Kingdom,9,Very Small,2016,1-10,Self-funded,0,0.0,0.1111111111111111,9
+53,1,2,Oxford Space Systems,Industrials,United Kingdom,12,Small,2013,11-50,Seed,20000000,16.811242881518265,0.16666666666666666,24
+54,2,2,Open Cosmos,Logistics,United Kingdom,10,Small,2015,11-50,Series A,7000000,15.76142084987672,0.2,20
+55,2,2,Epsilon3,Software,United States,4,Small,2021,11-50,Series A,15000000,16.52356082573315,0.5,8
+56,3,3,Astra,Launch,United States,9,Medium,2016,201-500,Series B,100000000,18.420680753952364,0.3333333333333333,27
+57,3,4,Skylo,Satellites,United States,8,Large,2017,51-200,Series B,103000000,18.450239555902648,0.5,32
+58,3,4,Loft Orbital,Infrastructure,United States,9,Large,2016,51-200,Series B,156000000,18.86536657162407,0.4444444444444444,36
+59,2,3,Astranis Space Technologies Corp,Satellites,United States,10,Medium,2015,201-500,Series A,13500000,16.41820031748273,0.3,30
+60,2,4,Muon Space,Satellites,United States,4,Large,2021,51-200,Series A,25000000,17.034386422832473,1.0,16
+61,1,2,Solestial,Industrials,United States,12,Small,2013,11-50,Seed,1300000,14.077875591662238,0.16666666666666666,24
+62,1,1,Exo-Space,Software,United States,5,Very Small,2020,1-10,Seed,208000,12.245298166364206,0.2,5
+63,1,2,"Tropical Weather Analytics, Inc.",Satellites,United States,10,Small,2015,11-50,Seed,0,0.0,0.2,20
+64,0,1,Spaced Ventures,Information Research,United States,5,Very Small,2020,1-10,Self-funded,0,0.0,0.2,5
+65,2,2,Slingshot Aerospace ,Information Research,United States,8,Small,2017,11-50,Series A,17000000,16.648723960844016,0.25,16
+66,1,1,Varda Space,Infrastructure,United States,5,Very Small,2020,1-10,Seed,9000000,16.012735246411598,0.2,5
+67,0,1,Applied Ion Systems LLC,Satellites,United States,6,Very Small,2019,1-10,Self-funded,10000,9.210440366976517,0.16666666666666666,6
+68,2,4,Ramon.Space,Satellites,United States,21,Large,2004,51-200,Series A,17500000,16.677711496036597,0.19047619047619047,84
+69,0,1,Utowave,Satellites,United States,5,Very Small,2020,1-10,Self-funded,0,0.0,0.2,5
+70,0,1,Eclipse Orbital,Launch,United States,8,Very Small,2017,1-10,Self-funded,0,0.0,0.125,8
+71,1,1,OrbitsEdge,Infrastructure,United States,7,Very Small,2018,1-10,Seed,0,0.0,0.14285714285714285,7
+72,0,1,Stellar Amenities,Habitats,United States,6,Very Small,2019,1-10,Self-funded,0,0.0,0.16666666666666666,6
+73,2,2,Momentus,Infrastructure,United States,8,Small,2017,11-50,Series A,33800000,17.335971390039045,0.25,16
+74,1,1,Epic Aerospace,Infrastructure,United States,11,Very Small,2014,1-10,Seed,150000,11.918397239722838,0.09090909090909091,11
+75,0,1,Miles Space,Satellites,United States,10,Very Small,2015,1-10,Self-funded,0,0.0,0.1,10
+76,1,1,Leo Aerospace,Launch,United States,8,Very Small,2017,1-10,Seed,0,0.0,0.125,8
+77,0,1,Astralytical,Information Research,United States,9,Very Small,2016,1-10,Self-funded,0,0.0,0.1111111111111111,9
+78,1,2,Phase Four,Satellites,United States,10,Small,2015,11-50,Seed,1000000,13.815511557963774,0.2,20
+79,0,1,Stofiel Aerospace,Launch,United States,10,Very Small,2015,1-10,Self-funded,0,0.0,0.1,10
+80,0,1,Hydrosat,Satellites,United States,8,Very Small,2017,1-10,Self-funded,0,0.0,0.125,8
+81,0,1,RedWorks,Industrials,United States,8,Very Small,2017,1-10,Self-funded,0,0.0,0.125,8
+82,1,1,Spacept,Software,United States,6,Very Small,2019,1-10,Seed,110000,11.608244735642321,0.16666666666666666,6
+83,1,1,First Resonance,Logistics,United States,7,Very Small,2018,1-10,Seed,0,0.0,0.14285714285714285,7
+84,1,2,Audacy,Infrastructure,United States,10,Small,2015,11-50,Seed,13100000,16.388122864507256,0.2,20
+85,1,1,Gateway Galactic,Logistics,United States,11,Very Small,2014,1-10,Seed,53000,10.87806606028079,0.09090909090909091,11
+86,2,2,SpacePharma,Information Research,United States,13,Small,2012,11-50,Series A,0,0.0,0.15384615384615385,26
+87,1,1,Atomos Space,Infrastructure,United States,8,Very Small,2017,1-10,Seed,460000,13.038983942375959,0.125,8
+88,1,1,Southern Stars,Logistics,United States,15,Very Small,2010,1-10,Seed,117000,11.669937760751914,0.06666666666666667,15
+89,0,1,AstroComm,Satellites,United States,11,Very Small,2014,1-10,Self-funded,0,0.0,0.09090909090909091,11
+90,0,1,Abstract Assembly,Satellites,United States,7,Very Small,2018,1-10,Self-funded,0,0.0,0.14285714285714285,7
+91,0,1,RoGo Fire,Satellites,United States,7,Very Small,2018,1-10,Self-funded,0,0.0,0.14285714285714285,7
+92,0,1,Gold Orbit,Industrials,United States,7,Very Small,2018,1-10,Self-funded,0,0.0,0.14285714285714285,7
+93,0,1,Exodus Space Corp,Launch,United States,7,Very Small,2018,1-10,Self-funded,0,0.0,0.14285714285714285,7
+94,0,2,EXOS Aerospace,Launch,United States,11,Small,2014,11-50,Self-funded,1000000,13.815511557963774,0.18181818181818182,22
+95,4,4,Spire,Satellites,United States,13,Large,2012,51-200,Series C+,140500000,18.760718053855513,0.3076923076923077,52
+96,1,2,Astrobotic,Rovers,United States,17,Small,2008,11-50,Seed,12500000,16.341239282272525,0.11764705882352941,34
+97,1,2,Atlas Space,Satellites,United States,10,Small,2015,11-50,Seed,722000,13.489781802915555,0.2,20
+98,3,2,BridgeSat,Satellites,United States,10,Small,2015,11-50,Series B,10000000,16.118095750958314,0.2,20
+99,3,2,Hawkeye 360,Information Research,United States,10,Small,2015,11-50,Series B,99300000,18.413656139085894,0.2,20
+100,2,4,Nanoracks,Logistics,United States,16,Large,2009,51-200,Series A,0,0.0,0.25,64
+101,1,2,Speqtral,Industrials,United States,10,Small,2015,11-50,Seed,1900000,14.45736497045232,0.2,20
+102,2,2,Ursa Major Technologies,Satellites,United States,10,Small,2015,11-50,Series A,0,0.0,0.2,20
+103,4,4,World View Enterprises,Launch,United States,12,Large,2013,51-200,Series C+,41800000,17.54840692141843,0.3333333333333333,48
+104,1,2,Analytical Space,Logistics,United States,9,Small,2016,11-50,Seed,4000000,15.201805169084134,0.2222222222222222,18
+105,3,4,Vector Launch,Launch,United States,9,Large,2016,51-200,Series B,102800000,18.448295920712965,0.4444444444444444,36
+106,2,2,LEO Labs,Logistics,United States,10,Small,2015,11-50,Series A,0,0.0,0.2,20
+107,1,2,Akash Systems,Satellites,United States,9,Small,2016,11-50,Seed,17600000,16.68340951682656,0.2222222222222222,18
+108,1,2,Axiom Space,Biosphere,United States,10,Small,2015,11-50,Seed,0,0.0,0.2,20
+109,3,2,OneWeb,Satellites,United States,13,Small,2012,11-50,Series B,3000000000,21.821878125947855,0.15384615384615385,26
+110,0,2,Space Angels,Information Research,United States,18,Small,2007,11-50,Self-funded,0,0.0,0.1111111111111111,36
+111,1,2,Altius Space,Satellites,United States,15,Small,2010,11-50,Seed,87600,11.38054769238444,0.13333333333333333,30
+112,2,1,Because Learning,Media Education,United States,11,Very Small,2014,1-10,Series A,2000000,14.508658238524095,0.09090909090909091,11
+113,0,1,SpaceVR,Media Education,United States,11,Very Small,2014,1-10,Self-funded,0,0.0,0.09090909090909091,11
+114,3,5,Relativity Space,Launch,United States,9,Very Large,2016,501-1000,Series B,45700000,17.63760887774627,0.5555555555555556,45
+115,1,1,Kubos,Logistics,United States,11,Very Small,2014,1-10,Seed,2400000,14.690979711984754,0.09090909090909091,11
+116,3,2,Capella Space,Satellites,United States,9,Small,2016,11-50,Series B,33900000,17.338925601849205,0.2222222222222222,18
+117,1,1,Bagaveev,Launch,United States,12,Very Small,2013,1-10,Seed,655000,13.39239204133378,0.08333333333333333,12
+118,2,4,Firefly Aerospace,Launch,United States,11,Large,2014,51-200,Series A,21600000,16.888203918950687,0.36363636363636365,44
+119,0,2,Bryce Space & Tech,Information Research,United States,8,Small,2017,11-50,Self-funded,0,0.0,0.25,16
+120,4,6,SpaceX,Launch,United States,23,Enterprise,2002,1000+,Series C+,2850000000,21.770584831577846,0.2608695652173913,138
+121,4,3,Rocket Lab,Launch,United States,19,Medium,2006,201-500,Series C+,215000000,19.186148590743098,0.15789473684210525,57
+122,4,3,Planet,Satellites,United States,15,Medium,2010,201-500,Series C+,183100000,19.025543015106237,0.2,45
+123,2,2,Orbit Fab,Infrastructure,United States,7,Small,2018,11-50,Series A,0,0.0,0.2857142857142857,14
+124,3,4,Moon Express,Rovers,United States,15,Large,2010,51-200,Series B,65500000,17.997560715872655,0.26666666666666666,60
+125,1,4,Made In Space,Industrials,United States,15,Large,2010,51-200,Seed,73000000,18.105970012811294,0.26666666666666666,60
+126,0,1,Cemvita Factory,Biosphere,United States,8,Very Small,2017,1-10,Self-funded,0,0.0,0.125,8
+127,0,6,Blue Origin,Launch,United States,25,Enterprise,2000,1000+,Self-funded,1000000000,20.72326583794641,0.24,150
+128,0,2,AI SpaceFactory,Habitats,United States,8,Small,2017,11-50,Self-funded,0,0.0,0.25,16
+129,2,2,Accion Systems,Satellites,United States,11,Small,2014,11-50,Series A,15500000,16.5563506464056,0.18181818181818182,22

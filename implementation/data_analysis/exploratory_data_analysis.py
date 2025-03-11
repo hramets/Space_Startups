@@ -522,9 +522,9 @@ plt.close()
     current funding level (0.36).
 """
 
-### ADDITIONAL ANALYSIS
 
-## KMeans clustering
+
+## K-MEANS CLUSTERING
 """
 It makes sense to use variables with low correlation.
 According to the correlation visualization the next combinations appropriate
@@ -568,7 +568,7 @@ between current_funding_leven(num), startup_age and amount_raised_log.
 """
 
 
-## Additional analysis
+### ADDITIONAL ANALYSIS
 
 
 main_data["growing_rate"] = (
@@ -731,3 +731,5 @@ Age outliers:
 - SpaceX, Launch, USA
 - Blue Origin, Launch, USA
 """
+
+main_data.to_csv("assets/data/main_data.csv")

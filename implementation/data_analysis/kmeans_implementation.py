@@ -213,81 +213,81 @@ def get_kmeans_elbow_data(
 
 main_data: pd.DataFrame = pd.read_csv(filepath_or_buffer="assets/data/for_kmeans.csv")
 
-# # 1st combination
+# 1st combination
 
-# data1_for_kmeans: pd.DataFrame = main_data[
-#     ["current_funding_level(num)", "startup_age"]
-# ]
+data1_for_kmeans: pd.DataFrame = main_data[
+    ["current_funding_level(num)", "startup_age"]
+]
 
-# k_variants1: list[int] = list(range(1, 6))
-# elbow_data1: dict[int, np.float64] = (
-#     get_kmeans_elbow_data(data=data1_for_kmeans, k_variants=k_variants1)
-# )
-# fig, ax = plt.subplots()
-# sns.lineplot(data=elbow_data1)
-# plt.savefig("assets/visualizations/kmeans/elbow1.png")
-# # Optimal k is 3
-# data1_k: int = 3
-# plt.close()
+k_variants1: list[int] = list(range(1, 6))
+elbow_data1: dict[int, np.float64] = (
+    get_kmeans_elbow_data(data=data1_for_kmeans, k_variants=k_variants1)
+)
+fig, ax = plt.subplots()
+sns.lineplot(data=elbow_data1)
+plt.savefig("assets/visualizations/kmeans/elbow1.png")
+# Optimal k is 3
+data1_k: int = 3
+plt.close()
       
-# kmeans_data1: KMeans = KMeans(data=data1_for_kmeans, k=data1_k) 
-# data1_kmeans_best_res: dict[tuple[np.float64], list[NDArray[np.float64]]] = (
-#     kmeans_data1.get_best_result(runs=10)
-# )
+kmeans_data1: KMeans = KMeans(data=data1_for_kmeans, k=data1_k) 
+data1_kmeans_best_res: dict[tuple[np.float64], list[NDArray[np.float64]]] = (
+    kmeans_data1.get_best_result(runs=10)
+)
     
-# colors1: list[str] = ["red", "green", "orange"]
-# data1_kmeans_centers: list[list[NDArray]] = list(data1_kmeans_best_res.keys())
-# data1_kmeans_points: list[tuple] = list(data1_kmeans_best_res.values())
+colors1: list[str] = ["red", "green", "orange"]
+data1_kmeans_centers: list[list[NDArray]] = list(data1_kmeans_best_res.keys())
+data1_kmeans_points: list[tuple] = list(data1_kmeans_best_res.values())
 
-# fig, ax = plt.subplots(figsize=(7, 7))
-# for i in range(data1_k):
-#     center: NDArray = np.array(object=data1_kmeans_centers[i])
-#     points: NDArray = np.array(object=data1_kmeans_points[i])
-#     plt.scatter(
-#        x=points[:,0],
-#        y=points[:,1],
-#        c=colors1[i],
-#        s=20.0
-#     )
-#     plt.scatter(
-#         x=center[0],
-#         y=center[1],
-#         c=colors1[i],
-#         marker="x",
-#         s=40.0
-#     )
-# plt.savefig("assets/visualizations/kmeans/data1.png")
-# plt.show()
+fig, ax = plt.subplots(figsize=(7, 7))
+for i in range(data1_k):
+    center: NDArray = np.array(object=data1_kmeans_centers[i])
+    points: NDArray = np.array(object=data1_kmeans_points[i])
+    plt.scatter(
+       x=points[:,0],
+       y=points[:,1],
+       c=colors1[i],
+       s=20.0
+    )
+    plt.scatter(
+        x=center[0],
+        y=center[1],
+        c=colors1[i],
+        marker="x",
+        s=40.0
+    )
+plt.savefig("assets/visualizations/kmeans/data1.png")
+plt.show()
 
-# all_clusters_points1: list[list[NDArray]] = list(
-#     data1_kmeans_best_res.values()
-# )
-# main_data["kmeans1_cluster"] = np.nan
-# for i, row in main_data.iterrows():
-#     data_point: NDArray = np.array(
-#         object=[row["current_funding_level(num)"], row["startup_age"]]
-#     )
-#     if any(
-#         np.array_equal(
-#             a1=data_point,
-#             a2=cluster_point) 
-#         for cluster_point in all_clusters_points1[0]
-#     ):
-#         main_data.at[i, "kmeans1_cluster"] = 0
-#     elif any(
-#         np.array_equal(
-#             a1=data_point,
-#             a2=cluster_point) 
-#         for cluster_point in all_clusters_points1[1]
-#     ):
-#         main_data.at[i, "kmeans1_cluster"] = 1
-#     elif any(
-#         np.array_equal(
-#             a1=data_point,
-#             a2=cluster_point) 
-#         for cluster_point in all_clusters_points1[2]
-#     ):
-#         main_data.at[i, "kmeans1_cluster"] = 2
+all_clusters_points1: list[list[NDArray]] = list(
+    data1_kmeans_best_res.values()
+)
+main_data["kmeans1_cluster"] = np.nan
+for i, row in main_data.iterrows():
+    data_point: NDArray = np.array(
+        object=[row["current_funding_level(num)"], row["startup_age"]]
+    )
+    if any(
+        np.array_equal(
+            a1=data_point,
+            a2=cluster_point) 
+        for cluster_point in all_clusters_points1[0]
+    ):
+        main_data.at[i, "kmeans1_cluster"] = 0
+    elif any(
+        np.array_equal(
+            a1=data_point,
+            a2=cluster_point) 
+        for cluster_point in all_clusters_points1[1]
+    ):
+        main_data.at[i, "kmeans1_cluster"] = 1
+    elif any(
+        np.array_equal(
+            a1=data_point,
+            a2=cluster_point) 
+        for cluster_point in all_clusters_points1[2]
+    ):
+        main_data.at[i, "kmeans1_cluster"] = 2
     
 
 # 2nd combination
@@ -303,7 +303,7 @@ elbow_data2: dict[int, np.float64] = (
 )
 fig, ax = plt.subplots()
 sns.lineplot(data=elbow_data2)
-# plt.savefig("assets/visualizations/kmeans/elbow2.png")
+plt.savefig("assets/visualizations/kmeans/elbow2.png")
 # Optimal k is 3
 data2_k: int = 3
 plt.close()
@@ -370,86 +370,86 @@ for i, row in main_data.iterrows():
 
 # 3rd combination        
         
-# data3_for_kmeans: pd.DataFrame = main_data[
-#     ["current_funding_level(num)", "startup_age", "amount_raised_log"]
-# ]
+data3_for_kmeans: pd.DataFrame = main_data[
+    ["current_funding_level(num)", "startup_age", "amount_raised_log"]
+]
 
-# k_variants3: list[int] = list(range(1, 6))
-# elbow_data3: dict[int, np.float64] = (
-#     get_kmeans_elbow_data(data=data3_for_kmeans, k_variants=k_variants3)
-# )
-# fig, ax = plt.subplots()
-# sns.lineplot(data=elbow_data3)
-# plt.savefig("assets/visualizations/kmeans/elbow3.png")
-# # Optimal k is 3
-# data3_k: int = 3
-# plt.close()
+k_variants3: list[int] = list(range(1, 6))
+elbow_data3: dict[int, np.float64] = (
+    get_kmeans_elbow_data(data=data3_for_kmeans, k_variants=k_variants3)
+)
+fig, ax = plt.subplots()
+sns.lineplot(data=elbow_data3)
+plt.savefig("assets/visualizations/kmeans/elbow3.png")
+# Optimal k is 3
+data3_k: int = 3
+plt.close()
 
-# kmeans_data2: KMeans = KMeans(data=data3_for_kmeans, k=data3_k) 
-# data3_kmeans_best_res: dict[tuple[np.float64], list[NDArray[np.float64]]] = (
-#     kmeans_data2.get_best_result(runs=10)
-# )
+kmeans_data2: KMeans = KMeans(data=data3_for_kmeans, k=data3_k) 
+data3_kmeans_best_res: dict[tuple[np.float64], list[NDArray[np.float64]]] = (
+    kmeans_data2.get_best_result(runs=10)
+)
     
-# colors3: list[str] = ["red", "green", "orange"]
-# data3_kmeans_centers: list[list[NDArray]] = list(data3_kmeans_best_res.keys())
-# data3_kmeans_points: list[tuple] = list(data3_kmeans_best_res.values())
+colors3: list[str] = ["red", "green", "orange"]
+data3_kmeans_centers: list[list[NDArray]] = list(data3_kmeans_best_res.keys())
+data3_kmeans_points: list[tuple] = list(data3_kmeans_best_res.values())
 
-# fig = plt.figure(figsize=(7, 7))
-# ax = fig.add_subplot(111, projection="3d")
-# for i in range(data3_k):
-#     center: NDArray = np.array(object=data3_kmeans_centers[i])
-#     points: NDArray = np.array(object=data3_kmeans_points[i])
-#     ax.scatter(
-#        xs=points[:,0],
-#        ys=points[:,1],
-#        zs=points[:,2],
-#        c=colors3[i],
-#        s=20.0
-#     )
-#     ax.scatter(
-#         xs=center[0],
-#         ys=center[1],
-#         zs=center[2],
-#         c=colors3[i],
-#         marker="x",
-#         s=40.0
-#     )
-# ax.set_xlabel("current_funding_level(num)")
-# ax.set_ylabel("startup_age")
-# ax.set_zlabel("amount_raised_log")
-# plt.savefig("assets/visualizations/kmeans/data3.png")
-# plt.show()
+fig = plt.figure(figsize=(7, 7))
+ax = fig.add_subplot(111, projection="3d")
+for i in range(data3_k):
+    center: NDArray = np.array(object=data3_kmeans_centers[i])
+    points: NDArray = np.array(object=data3_kmeans_points[i])
+    ax.scatter(
+       xs=points[:,0],
+       ys=points[:,1],
+       zs=points[:,2],
+       c=colors3[i],
+       s=20.0
+    )
+    ax.scatter(
+        xs=center[0],
+        ys=center[1],
+        zs=center[2],
+        c=colors3[i],
+        marker="x",
+        s=40.0
+    )
+ax.set_xlabel("current_funding_level(num)")
+ax.set_ylabel("startup_age")
+ax.set_zlabel("amount_raised_log")
+plt.savefig("assets/visualizations/kmeans/data3.png")
+plt.show()
 
-# all_clusters_points3: list[list[NDArray]] = list(
-#     data3_kmeans_best_res.values()
-# )
-# main_data["kmeans3_cluster"] = np.nan
-# for i, row in main_data.iterrows():
-#     data_point: NDArray = np.array(
-#         object=[
-#             row["current_funding_level(num)"],
-#             row["startup_age"],
-#             row["amount_raised_log"]
-#         ]
-#     )
-#     if any(
-#         np.array_equal(
-#             a1=data_point,
-#             a2=cluster_point) 
-#         for cluster_point in all_clusters_points3[0]
-#     ):
-#         main_data.at[i, "kmeans3_cluster"] = 0
-#     elif any(
-#         np.array_equal(
-#             a1=data_point,
-#             a2=cluster_point) 
-#         for cluster_point in all_clusters_points3[1]
-#     ):
-#         main_data.at[i, "kmeans3_cluster"] = 1
-#     elif any(
-#         np.array_equal(
-#             a1=data_point,
-#             a2=cluster_point) 
-#         for cluster_point in all_clusters_points3[2]
-#     ):
-#         main_data.at[i, "kmeans3_cluster"] = 2
+all_clusters_points3: list[list[NDArray]] = list(
+    data3_kmeans_best_res.values()
+)
+main_data["kmeans3_cluster"] = np.nan
+for i, row in main_data.iterrows():
+    data_point: NDArray = np.array(
+        object=[
+            row["current_funding_level(num)"],
+            row["startup_age"],
+            row["amount_raised_log"]
+        ]
+    )
+    if any(
+        np.array_equal(
+            a1=data_point,
+            a2=cluster_point) 
+        for cluster_point in all_clusters_points3[0]
+    ):
+        main_data.at[i, "kmeans3_cluster"] = 0
+    elif any(
+        np.array_equal(
+            a1=data_point,
+            a2=cluster_point) 
+        for cluster_point in all_clusters_points3[1]
+    ):
+        main_data.at[i, "kmeans3_cluster"] = 1
+    elif any(
+        np.array_equal(
+            a1=data_point,
+            a2=cluster_point) 
+        for cluster_point in all_clusters_points3[2]
+    ):
+        main_data.at[i, "kmeans3_cluster"] = 2
