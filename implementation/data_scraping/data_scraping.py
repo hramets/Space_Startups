@@ -7,18 +7,46 @@ from urllib.parse import urljoin
 import logging
 
 
+error_logger: logging.Logger = logging.getLogger(
+    name="data_scrapping_errors"
+)
+error_logger.setLevel(logging.ERROR)
+error_handler: logging.FileHandler = logging.FileHandler(
+    filename="data_scraping\error_logger.log", mode="w"
+)
+error_formatter = logging.Formatter(
+    fmt="%(name)s - Line: %(lineno)s\n%(message)s"
+)
+error_handler.setFormatter(fmt=error_formatter)
+error_logger.addHandler(hdlr=error_handler)
+
+info_logger: logging.Logger = logging.getLogger(
+    name="data_scrapping_info"
+)
+info_logger.setLevel(logging.INFO)
+info_handler: logging.FileHandler = logging.FileHandler(
+    filename="data_scraping\debug_logger.log", mode="w"
+)
+info_formatter = logging.Formatter(
+    fmt="%(name)s - %(message)s"
+)
+info_handler.setFormatter(fmt=info_formatter)
+info_logger.addHandler(hdlr=info_handler)
+
+
 def parse_url(url: str) -> BeautifulSoup:
     """
-    Function takes url, creates response with requests,
+    Function takes url, creates response with requests and
     parses to html with BeautifulSoup.
-    Returns BeautifulSoup parser
+    Returns BeautifulSoup parser.
     """
     response: requests.models.Response = requests.get(url)
     response.raise_for_status()
 
     parser: BeautifulSoup = BeautifulSoup(
         markup=response.text,
-        features="html.parser")
+        features="html.parser"
+    )
 
     return parser
 
@@ -32,14 +60,16 @@ def extract_country_startups_page_info(
     and parses to html. It extracts all the startups html blocks
     and then iterate through them. For each startup html block is
     used function 'extract_start_up_info', that extracts
-    all the information about a certain startup.
+    all the information about a startup.
     Extracted startup info is appended to the storage list.
-    Return storage list.
+    Returns the storage list.
     """
     try:
         country_startups_page_parser: BeautifulSoup = parse_url(page_url)
     except requests.exceptions.RequestException as error:
-        logging.warning(msg=f"Error fetching country URL {page_url}: {error}")
+        error_logger.error(
+            msg=f"Error fetching country URL {page_url}: {error}"
+        )
         return
 
     # All the startups html -> class "industries-inner"
@@ -47,7 +77,7 @@ def extract_country_startups_page_info(
         country_startups_page_parser.find_all(class_="industries-inner")
     )
     if not startups_info_html:
-        logging.warning(msg=f"No startups found on {page_url}")
+        info_logger.warning(msg=f"No startups found on {page_url}")
         return
 
     for startup_info_html in startups_info_html:
@@ -59,8 +89,8 @@ def extract_country_startups_page_info(
 
 def extract_startup_info(html: ResultSet) -> dict[str, str]:
     """
-    Function takes a startup html block extracting information about it.
-    Returns startup info in dictionary.
+    Function takes a startup html block to extract it's information.
+    Returns startup info as dictionary.
     """
     startup_info: dict[str, Any] = {}
     try:
@@ -82,7 +112,7 @@ def extract_startup_info(html: ResultSet) -> dict[str, str]:
         # Startup industry is on the startup page.
         startup_url: str = extract_startup_url(startup_html=html)
         if not startup_url:
-            logging.warning(
+            info_logger.warning(
                 msg=f"startup url was not found for {startup_name}"
             )
 
@@ -100,19 +130,20 @@ def extract_startup_info(html: ResultSet) -> dict[str, str]:
             # Info parts text example: "Location:Australia"
             info_part: list[str] = (
                 info_html.text.split(sep=":") if info_html else [
-                    "Unknown", "Unknown"
+                    "Unknown",
+                    "Unknown"
                 ]
             )
 
             if len(info_part) == 2:
                 startup_info[info_part[0]] = info_part[1]
             else:
-                logging.warning(
+                error_logger.error(
                     msg=f"Unexpected info part for {startup_info['Name']}"
                 )
 
     except Exception as error:
-        logging.warning(msg=f"Error extracting startup info: {error}")
+        error_logger.error(msg=f"Error extracting startup info: {error}")
         startup_info["Error"] = "Parsing failed"
 
     return startup_info
@@ -126,7 +157,7 @@ def extract_startup_industry(startup_url: str) -> str:
     try:
         startup_page_parser: BeautifulSoup = parse_url(startup_url)
     except requests.exceptions.RequestException as error:
-        logging.warning(
+        error_logger.error(
             msg=f"Error fetching startup URL {startup_url}: {error}"
         )
         return
@@ -135,7 +166,9 @@ def extract_startup_industry(startup_url: str) -> str:
         startup_page_parser.find(class_="pill blue")
     )
     if not startup_industry_html:
-        logging.info(msg=f"Startup industry was not found on {startup_url}")
+        info_logger.warning(
+            msg=f"Startup industry was not found on {startup_url}"
+        )
         return "Unknown"
 
     industry: str = startup_industry_html.text
@@ -161,14 +194,6 @@ def extract_startup_url(
 
 
 def main() -> None:
-    logging.basicConfig(
-        level=logging.INFO,
-        filename=(
-            "C:\\Users\\artjo\\.vscode\\Space StartUps\\implementation\\data_scrapping\\data_scrap_logs.log"
-        ),
-        format="%(levelname)s - %(message)s\tLine: %(lineno)s",
-        filemode="w"
-    )
 
     url_base: str = "https://www.spacebandits.io"
     countries_page_url: str = urljoin(
@@ -180,7 +205,7 @@ def main() -> None:
     try:
         countries_page_parser = parse_url(url=countries_page_url)
     except requests.exceptions.RequestException as error:
-        logging.critical(
+        error_logger.critical(
             msg=f"Error fetching countries URL {countries_page_url}: {error}"
         )
         return
@@ -189,13 +214,17 @@ def main() -> None:
         class_="w-dyn-item"
     )
     if not countries:
-        logging.critical(msg=f"No countries found on {countries_page_url}")
+        error_logger.critical(
+            msg=f"No countries found on {countries_page_url}."
+        )
         return
 
     for country in countries:
         # "a" tag with "href" contains the end of country startup url.
         if not (country.a or country.a["href"]):
-            logging.warning(msg="A country page or url was not found")
+            info_logger.warning(
+                msg=f"A country {country} page or url was not found."
+            )
             continue
         country_startups_page_url_end: str = country.a["href"].strip()
         country_startups_page_url: str = urljoin(
@@ -208,7 +237,7 @@ def main() -> None:
             storage=all_startups_info_storage
         )
 
-    # Save data to json
+    # Save data to json.
     with open(
         "C:\\Users\\artjo\\.vscode\\Space StartUps\\assets\\data\\startups_data.json",
         "w",

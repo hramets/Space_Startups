@@ -2,38 +2,12 @@ import warnings
 warnings.filterwarnings('ignore')
 import pandas as pd
 import numpy as np
-from numpy.typing import NDArray
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter, MultipleLocator, MaxNLocator
 import seaborn as sns
 import json
 import datetime
-import logging
-from typing import Callable, Iterable
-
-
-
-## Adjusting logging
-
-error_logger: logging.Logger = logging.getLogger("debug_logger")
-error_logger.setLevel(logging.ERROR)
-error_handler: logging.FileHandler = logging.FileHandler(
-    filename="error_logger.log", mode="w"
-)
-error_formatter = logging.Formatter(
-    fmt="%(name)s %(asctime)s %(message)s\nLine: %(lineno)s"
-)
-error_handler.setFormatter(fmt=error_formatter)
-error_logger.addHandler(hdlr=error_handler)
-
-debug_logger: logging.Logger = logging.getLogger("debug_logger")
-debug_logger.setLevel(logging.DEBUG)
-debug_handler: logging.FileHandler = logging.FileHandler(
-    filename="debug_logger.log", mode="w"
-)
-debug_formatter = logging.Formatter(fmt="%(name)s %(asctime)s %(message)s\nLine: %(lineno)s")
-debug_handler.setFormatter(fmt=debug_formatter)
-debug_logger.addHandler(hdlr=debug_handler)
+from typing import Callable
 
 
 ### EDA
@@ -47,18 +21,20 @@ with open(file=(
     encoding="utf-8"
 ) as file:
     data: dict[str, str] = json.load(fp=file)
-    
+
 data: pd.DataFrame = pd.DataFrame(data=data)
 
 # While data scrapping not founded values were recorded as "Unknown" or "".
 data = data.replace(to_replace=["Unknown", ""], value=None)
 
-#print(data.info())  # =>
+print(data.info())  # =>
 """
 - Data has 130 rows and 7 columns.
 - Only Industry column has one null-value.
 """
-#print(data[data["Industry"].isnull()]) # =>
+
+
+print(data[data["Industry"].isnull()]) # =>
 """
 NewRocket startup has no industry on page.
 According to the startup's description, the Launch industry fits here.
@@ -66,7 +42,9 @@ According to the startup's description, the Launch industry fits here.
 newrocket_ind: int = data[data.Name == "NewRocket"].index.item()
 data.at[newrocket_ind, "Industry"] = "Launch"
 
-#print(data.nunique()) # =>
+print(data.nunique()) # =>
+
+
 """
 Name and Idea columns have all the 130 values unique.
 Data contains:
@@ -79,13 +57,15 @@ Data contains:
 ....
 """
 
-#print(data.columns) # =>
+print(data.columns) # =>
+
+
 """
 All columns are renamed for dataframe readability.
 Also, columns Location, Founded, Idea are concretized.
 """
 remove_non_ch: Callable = lambda ch: ch if ch.isascii() or ch == " " else ""
-increase_readability: Callable = lambda col_name:(
+increase_readability: Callable = lambda col_name: (
     "_".join(
         (
             "".join(
@@ -108,13 +88,13 @@ change_names_dict["Idea"] = "description"
 
 data = data.rename(columns=change_names_dict)
 
-""" 
+"""
 Column Idea is excluded from the main dataframe. It is not relevant for EDA.
 """
 idea_data: pd.DataFrame = data[["name", "description"]]
 main_data: pd.DataFrame = data.drop(columns="description", axis=1)
 
-#print(main_data.head())
+print(main_data.head())
 
 # Changing columns' types.
 main_data["year_founded"] = (
@@ -144,16 +124,16 @@ main_data.insert(
     column="startup_size",
     value=main_data["employees_number"].map(mapping)
 )
-#print(main_data.head())
+print(main_data.head())
 
 # Checking for anomalies in values.
-# for column in main_data.columns:
-#     print(main_data[column].unique()) if not column in [
-#         "name", "amount_raised(usd)"
-#     ] else None
+for column in main_data.columns:
+    print(main_data[column].unique()) if column not in [
+        "name", "amount_raised(usd)"
+    ] else None
 
 pd.set_option("display.float_format", "{:.0f}".format)
-#print(main_data.describe().T)
+print(main_data.describe().T)
 """
 - Space startups' foundation years - 1989-2021.
 - The oldest space startup is 35 years old, the youngest - 3
@@ -190,8 +170,8 @@ for column in numerical_columns:
             ax.xaxis.set_major_formatter(amount_formatter)
         else:
             ax.xaxis.set_minor_locator(MultipleLocator(1))
-        ax.yaxis.set_major_locator(MaxNLocator(integer=True)) 
-    #plt.savefig(f"{image_save_dir}{column}_skew.png")
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    plt.savefig(f"{image_save_dir}{column}_skew.png")
     plt.close(fig=fig)
 """
 - Space startups were started to be actively developed in around 2005.
@@ -199,7 +179,7 @@ for column in numerical_columns:
 - Very few space startups are more than 15 years old.
     As a rule - 5-12 years old.
 - There a few outliers, which are 20-35 years old.
-- Overwhelming majority of space startups have zero raised amount, 
+- Overwhelming majority of space startups have zero raised amount,
     much less amount are close to zero - 0-200 000 000.
     There are a few outliers (3) with about
     1 000 000 000 - 3 000 000 000 amount raised.
@@ -211,7 +191,7 @@ fig, axs = plt.subplots(
     figsize=(18, 15),
     layout="constrained"
 )
-#print(categorical_columns)
+print(categorical_columns)
 cat_column_ind: int = 0
 for row in range(3):
     for column in range(2):
@@ -236,23 +216,23 @@ for row in range(3):
             color="black",
             linestyle="--"
             )
-        
+
         if column_name in ["industry", "country"]:
             axs[row, column].tick_params(axis="x", rotation=90)
-        
+
         if cat_column_ind < len(categorical_columns) - 1:
             cat_column_ind += 1
             continue
         break
 axs[2, 1].remove()
 
-#plt.savefig(f"{image_save_dir}categorical_unvariate_observ.png")
+plt.savefig(f"{image_save_dir}categorical_univariate_observ.png")
 plt.close(fig=fig)
 """
 Categorical data countplots:
 - The most active space startups' industry is Satellites - about 40.
     The next is Launch - more than 25.
-- USA is a leader in space startups - more than 70. 
+- USA is a leader in space startups - more than 70.
     The second is UK - more than 10.
 - As a rule, there are very small and small size space startups with
     1-10 or 10-20 employees. Also, there are more than 15 large
@@ -267,7 +247,7 @@ Categorical data countplots:
 main_data["amount_raised_log"] = np.log1p(main_data["amount_raised(usd)"])
 plt.figure(layout="constrained")
 sns.histplot(data=main_data["amount_raised_log"], bins=50, kde=True)
-#plt.savefig(f"{image_save_dir}amount_log_distribution")
+plt.savefig(f"{image_save_dir}amount_log_distribution")
 plt.close()
 
 numerical_columns.append("amount_raised_log")
@@ -281,14 +261,14 @@ numerical_pairplot: sns.PairGrid = sns.pairplot(
     aspect=1
 )
 numerical_pairplot.figure.set_constrained_layout(True)
-#plt.savefig(f"{image_save_dir}numerical_bivariate_observ.png")
+plt.savefig(f"{image_save_dir}numerical_bivariate_observ.png")
 plt.close()
 """
 - Startup age has positive correlation with raised amount.
 Hence founding year has negative correlation with raised amount.
 """
 
-#print(categorical_columns, numerical_columns, sep="\n")
+print(categorical_columns, numerical_columns, sep="\n")
 
 fig, axs = plt.subplots(
     nrows=4, ncols=3, layout="constrained", figsize=(18, 25)
@@ -445,7 +425,7 @@ sns.barplot(
 axs[3, 2].set_title("Funding_lvl VS Amount_raised(USD)")
 
 
-#plt.savefig(f"{image_save_dir}categorical_bivariate_observ.png")
+plt.savefig(f"{image_save_dir}categorical_bivariate_observ.png")
 plt.close()
 
 """
@@ -459,7 +439,7 @@ plt.close()
     in size of enterprises (1000+ employees).
     On average, the biggest amounts are raised in enterprises(1000+ employees).
     But the next are medium size space startups.
-- On average, space startups on Series C+ funding level are 
+- On average, space startups on Series C+ funding level are
     the oldest ones and have the biggest amounts raised.
 """
 
@@ -468,7 +448,11 @@ plt.close()
 
 correlation_data: pd.DataFrame = main_data
 num_funding_lvl_mapping: dict[str, str] = {
-    "Self-funded": 0, "Seed": 1, "Series A": 2, "Series B": 3, "Series C+": 4
+    "Self-funded": 0,
+    "Seed": 1,
+    "Series A": 2,
+    "Series B": 3,
+    "Series C+": 4
 }
 num_size_mapping: dict[str, str] = {
     "Very Small": 1,
@@ -509,7 +493,7 @@ correlation_data = correlation_data.drop(
 plt.figure(figsize=(12, 7), layout="constrained")
 sns.heatmap(data=correlation_data.corr(), vmin=-1, vmax=1, annot=True)
 
-#plt.savefig(f"{image_save_dir}correlation_multivariate.png")
+plt.savefig(f"{image_save_dir}correlation_multivariate.png")
 plt.close()
 
 """
@@ -523,14 +507,15 @@ plt.close()
 """
 
 
+### K-MEANS CLUSTERING
 
-## K-MEANS CLUSTERING
+
 """
 It makes sense to use variables with low correlation.
 According to the correlation visualization the next combinations appropriate
 to k-means clustering:
     1. current_funding_level(num), startup_age
-        (correlation - 0.36) 
+        (correlation - 0.36)
     2. startups_age, amount_raised_log
         (correlation - 0.41)
     3. current_funding_level(num)[1], startup_age[2], amount_raised_log[3]
@@ -542,7 +527,7 @@ to k-means clustering:
 # 1st kmeans combination
 
 """
-The KMeans algorithm does not reveal any significant relationship between 
+The KMeans algorithm does not reveal any significant relationship between
 current_funding_leven(num) and startup_age. Instead, it primarily
 segregates startups based on their startup_age.
 """
@@ -594,14 +579,10 @@ axs[0, 0].set_ylabel(ylabel="count")
 axs[0, 0].set_xlabel(xlabel="industry")
 sns.barplot(data=data, palette="viridis", orient="h", ax=axs[0, 0])
 
-
-data = main_data.groupby("industry")["current_funding_level(num)"].mean().sort_values(
-    ascending=False
-)
+data = main_data.groupby("industry")["current_funding_level(num)"].mean().sort_values(ascending=False)
 axs[0, 1].set_ylabel(ylabel="average funding_level")
 axs[0, 1].set_xlabel(xlabel="industry")
 sns.barplot(data=data, palette="viridis", orient="h", ax=axs[0, 1])
-
 
 data = main_data.groupby("industry")["growing_rate"].mean().sort_values(
     ascending=False
@@ -623,8 +604,8 @@ plt.close()
 """
 - The largest number of space startups is in the satellite industry.
     The second place is occupied by the space launch industry.
-- Space launch startups have reached the highest funding levels 
-    on average commpared to other industries. 
+- Space launch startups have reached the highest funding levels
+    on average commpared to other industries.
     The space rover industry takes second place in this regard.
 - The space launch and the space software industries have the fastest growth.
     The satellite industry takes third place
@@ -635,8 +616,8 @@ plt.close()
 - The space launch startups is a popular and fast-growing sector
     with high funding levels. Moreover, this industry has held out
     strongly in the market.
-The industiry statistics show a general toward early space exploration and
-reducing costs assiciated with exploration. 
+The industry statistics show a general toward early space and
+planets exploration, with reducing costs assiciated with exploration.
 """
 
 # Countries
@@ -655,18 +636,12 @@ axs[0, 0].set_ylabel(ylabel="count")
 axs[0, 0].set_xlabel(xlabel="country")
 sns.barplot(data=data, palette="viridis", orient="h", ax=axs[0, 0])
 
-
-data = main_data.groupby("country")["current_funding_level(num)"].mean().sort_values(
-    ascending=False
-).head(10)
+data = main_data.groupby("country")["current_funding_level(num)"].mean().sort_values(ascending=False).head(10)
 axs[0, 1].set_ylabel(ylabel="average funding_level")
 axs[0, 1].set_xlabel(xlabel="country")
 sns.barplot(data=data, palette="viridis", orient="h", ax=axs[0, 1])
 
-
-data = main_data.groupby("country")["growing_rate"].mean().sort_values(
-    ascending=False
-).head(10)
+data = main_data.groupby("country")["growing_rate"].mean().sort_values(ascending=False).head(10)
 axs[1, 0].set_ylabel(ylabel="growing_rate")
 axs[1, 0].set_xlabel(xlabel="country")
 sns.barplot(data=data, palette="viridis", orient="h", ax=axs[1, 0])
@@ -684,11 +659,11 @@ plt.close()
 """
 - The largest number of startups is in the USA. The UK takes second place
     with a significant gap.
-- China shows the fastest frowth in space startups.
+- China shows the fastest growth in space startups.
 - Japan and China have the highest average funding levels.
     Finland ranks third in this regard.
 - Japan is also the most sustainable country for space startups,
-    with Finland showing almost the same results. 
+    with Finland showing almost the same results.
     China takes the third place here.
 """
 
@@ -703,16 +678,16 @@ for country in research_countries:
     data = main_data[main_data["country"] == country]
     data = data.groupby("industry")["industry"].count().sort_values(ascending=False).head(3)
     print(country, data, "\n\n", sep="\n")
-    
+
 """
 The analysis shows, that Japan has only two space startups -
 in rover and satellite industires.
 Finland - 1 in Satellites.
 China - 2 in Launch.
-The USA focuses mostly on satellites (23) and space launches (14). Also, there are
-8 space infrastructure startups.
+The USA focuses mostly on satellites (23) and space launches (14).
+Also, there are 8 space infrastructure startups.
 The UK focuses on Industrials (4) and Launch (4).
-Also there are 2 space media education startups.
+Also, there are 2 space media education startups.
 """
 
 # Outliers
