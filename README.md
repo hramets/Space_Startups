@@ -2,7 +2,7 @@
 
 While I was surfing the Web, I faced with a quite catchy website, which looks pretty cozy at the same time. The website is a collection of today space startups and the information about them. So, I decided to use scrapping data tools to collect it for the future analysis.
 
-The report immerses to an explanatory data analysis using applying various statistic methods. After that an additional analysis comes with implementing K-Means clustering on the data and extracting insights about space startups' countries and industires.
+The report immerses to an explanatory data analysis using applying various statistic methods. After that an additional analysis comes with implementing K-Means clustering on the data and extracting insights about space startups' countries and industries.
 
 The project tasks were set:
 1. Collect the data
