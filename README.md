@@ -23,6 +23,8 @@ The main tools are used:
 
 I found it exciting to collect the space startups' information and make the data analysis to reveal insights in the area, where I have got few knowledge.
 
+Additionaly, the Power BI report was created to provide a quick and convenient overview of space startups - [Power BI report](bi_report.pbix).
+
 # RESEARCH
 
 ## 1. DATA
