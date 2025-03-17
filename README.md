@@ -9,17 +9,18 @@ The project tasks were set:
 2. Structure the data
 3. Implement an explanatory data analysis
 4. Implement KMeans clustering on the data
-5. Extract additional insights.
+5. Extract additional insights
 
 The main tools are used:
-- Python - programming language
-- Requests - sending HTTP requests to interact with a website
-- BeatifulSoap - scrapping data from webpages.
-- Pandas - data manipulating and analysis
-- Numpy - working with arrays.
-- Matplotlib and Seaborn - visualizing
-- VSCode - IDE
-- Git - version control
+- **Python** - programming language
+- **Requests** - sending HTTP requests to interact with a website
+- **BeatifulSoap** - scrapping data from webpages
+- **Pandas** - data manipulating and analysis
+- **Numpy** - working with arrays
+- **Matplotlib** and Seaborn - visualizing
+- **Flake8** - static code analyzer
+- **VSCode** - IDE
+- **Git** - version control
 
 I found it exciting to collect the space startups' information and make the data analysis to reveal insights in the area, where I have got few knowledge.
 
@@ -52,6 +53,9 @@ The data is structured as a list of dictionaries and subsequently converted to a
 
 ## 2. ANALYSIS
 ## 2.1. Exploratory Data Analysis
+
+The exploratory data analysis is implemented in a module [exploratory_data_analysis](implementation\data_analysis\exploratory_data_analysis.py).
+
 ### 2.1.1. Preliminary data explanation, manipulating and cleaning
 The initial data had 130 rows and 7 columns.
 
@@ -244,7 +248,7 @@ The K-Means clustering algorithm implementation reveals one insight: **Most deve
 
 ## 2.3. Additional Analysis
 
-Additional analysis is performed to further examine space startups across countries and industries.
+Additional analysis is performed to further examine space startups across countries and industries in the module [exploratory_data_analysis](implementation\data_analysis\exploratory_data_analysis.py) starting at 556 line.
 
 For the additional analysis, two new columns are created:
 - Growing rate: calculated as the ratio of the startup size (numerical) to startup age (size/age).
